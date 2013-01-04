@@ -65,13 +65,13 @@ import org.apache.mahout.math.VarLongWritable;
  * <p>
  * For example, to get started trying this out, set up Hadoop in a pseudo-distributed manner:
  * http://hadoop.apache.org/common/docs/current/quickstart.html You can stop at the point where it instructs
- * you to copy files into HDFS.
+ * you to copy files into MapR-FS.
  * </p>
  *
  * <p>
  * Assume your preference data file is {@code input.csv}. You will also need to create a file containing
  * all user IDs to write recommendations for, as something like {@code users.txt}. Place this input on
- * HDFS like so:
+ * MapR-FS like so:
  * </p>
  *
  * {@code hadoop fs -put input.csv input/input.csv; hadoop fs -put users.txt input/users.txt * }

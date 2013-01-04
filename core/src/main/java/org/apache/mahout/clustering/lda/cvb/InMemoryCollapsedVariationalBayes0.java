@@ -269,16 +269,16 @@ public class InMemoryCollapsedVariationalBayes0 extends AbstractJob {
 
     Option inputDirOpt = obuilder.withLongName("input").withRequired(true).withArgument(
       abuilder.withName("input").withMinimum(1).withMaximum(1).create()).withDescription(
-      "The Directory on HDFS containing the collapsed, properly formatted files having "
+      "The Directory on MapR-FS containing the collapsed, properly formatted files having "
           + "one doc per line").withShortName("i").create();
 
     Option dictOpt = obuilder.withLongName("dictionary").withRequired(false).withArgument(
       abuilder.withName("dictionary").withMinimum(1).withMaximum(1).create()).withDescription(
       "The path to the term-dictionary format is ... ").withShortName("d").create();
 
-    Option dfsOpt = obuilder.withLongName("dfs").withRequired(false).withArgument(
-      abuilder.withName("dfs").withMinimum(1).withMaximum(1).create()).withDescription(
-      "HDFS namenode URI").withShortName("dfs").create();
+    Option dfsOpt = obuilder.withLongName("maprfs").withRequired(false).withArgument(
+      abuilder.withName("maprfs").withMinimum(1).withMaximum(1).create()).withDescription(
+      "MapR-FS CLDB URI").withShortName("maprfs").create();
 
     Option numTopicsOpt = obuilder.withLongName("numTopics").withRequired(true).withArgument(abuilder
         .withName("numTopics").withMinimum(1).withMaximum(1)

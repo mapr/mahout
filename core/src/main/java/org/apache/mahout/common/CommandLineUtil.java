@@ -56,7 +56,7 @@ public final class CommandLineUtil {
     formatter.setGroup(group);
     formatter.setPrintWriter(pw);
     formatter.printHelp();
-    formatter.setFooter("Specify HDFS directories while running on hadoop; else specify local file system directories");
+    formatter.setFooter("Specify MapR-FS directories while running on hadoop; else specify local file system directories");
     formatter.printFooter();
 
     pw.flush();

@@ -72,7 +72,7 @@ public final class EigencutsSensitivityJob {
 
   /**
    * Initializes the configuration tasks, loads the needed data into
-   * the HDFS cache, and executes the job.
+   * the MapR-FS cache, and executes the job.
    * 
    * @param eigenvalues Vector of eigenvalues
    * @param diagonal Vector representing the diagonal matrix

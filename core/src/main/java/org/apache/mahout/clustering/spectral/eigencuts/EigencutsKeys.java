@@ -49,7 +49,7 @@ public interface EigencutsKeys {
   String EPSILON = "org.apache.mahout.clustering.spectral.epsilon";
 
   /**
-   * Base path to the location on HDFS where the diagonal matrix (a vector)
+   * Base path to the location on MapR-FS where the diagonal matrix (a vector)
    * and the list of eigenvalues will be stored for one of the map/reduce
    * jobs in Eigencuts.
    */

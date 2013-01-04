@@ -74,7 +74,7 @@ if [ ! -e ${WORK_DIR}/reuters-out-seqdir ]; then
     $MAHOUT org.apache.lucene.benchmark.utils.ExtractReuters ${WORK_DIR}/reuters-sgm ${WORK_DIR}/reuters-out
   fi
 
-  MAHOUT_LOCAL=true $MAHOUT seqdirectory -i ${WORK_DIR}/reuters-out -o ${WORK_DIR}/reuters-out-seqdir -c UTF-8 -chunk 5
+  MAHOUT_LOCAL=true $MAHOUT seqdirectory -i ${WORK_DIR}/reuters-out -o file:///${WORK_DIR}/reuters-out-seqdir -c UTF-8 -chunk 5
 fi
 
 # we know reuters-out-seqdir exists on a local disk at

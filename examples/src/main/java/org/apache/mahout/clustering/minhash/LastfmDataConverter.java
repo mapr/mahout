@@ -192,10 +192,10 @@ public final class LastfmDataConverter {
     if (args.length < 3) {
       System.out.println("[Usage]: LastfmDataConverter <input> <output> <dataset>");
       System.out.println("   <input>: Absolute path to the local file [usersha1-artmbid-artname-plays.tsv] ");
-      System.out.println("  <output>: Absolute path to the HDFS output file");
+      System.out.println("  <output>: Absolute path to the MapR-FS output file");
       System.out.println(" <dataset>: Either of the two Lastfm public datasets. "
           + "Must be either 'Users360K' or 'Users1K'");
-      System.out.println("Note:- Hadoop configuration pointing to HDFS namenode should be in classpath");
+      System.out.println("Note:- Hadoop configuration pointing to MapR-FS CLDB should be in classpath");
       return;
     }
     Lastfm dataSet = Lastfm.valueOf(args[2]);
@@ -206,9 +206,9 @@ public final class LastfmDataConverter {
     Path output = new Path(args[1]);
     boolean status = writeToSequenceFile(itemFeatures, output);
     if (status) {
-      System.out.println("Data converted and written successfully to HDFS location: [" + output + ']');
+      System.out.println("Data converted and written successfully to MapR-FS location: [" + output + ']');
     } else {
-      System.err.println("Error writing the converted data to HDFS location: [" + output + ']');
+      System.err.println("Error writing the converted data to MapR-FS location: [" + output + ']');
     }
   }
 }
