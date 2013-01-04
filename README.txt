@@ -31,3 +31,29 @@ Legal
 Documentation
 
 See http://mahout.apache.org/.
+
+
+Compiling Mahout with MapR patches
+
+Clone and checkout the "<mahout-version>-mapr" tag or branch of the Apache Mahout 
+release version from the github (https://github.com/mapr/mahout). For example,
+if you want to compile Mahout version 0.7, checkout the "0.7-mapr" tag.
+
+$ mkdir 0.7-mapr
+$ cd 0.7-mapr
+$ git clone git@github.com/mapr/mahout.git .
+$ git checkout 0.7-mapr
+$ mvn clean -DskipTests
+
+The command line argument `-DskipTests` is optional and allows you to skip running 
+the unit tests.
+
+
+Using Mahout artifacts in your Maven Project
+
+Add the following dependency to your project's pom.xml
+<dependency>
+  <groupId>com.mapr.mahout</groupId>
+  <artifactId>mahout</artifactId>
+  <version>${mapr.mahout.version}</version>
+</dependency>
