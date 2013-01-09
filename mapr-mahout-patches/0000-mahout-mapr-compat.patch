@@ -1,0 +1,655 @@
+diff --git a/README.txt b/README.txt
+index 477cac6..29eeb13 100644
+--- a/README.txt
++++ b/README.txt
+@@ -31,3 +31,29 @@ Legal
+ Documentation
+ 
+ See http://mahout.apache.org/.
++
++
++Compiling Mahout with MapR patches
++
++Clone and checkout the "<mahout-version>-mapr" tag or branch of the Apache Mahout 
++release version from the github (https://github.com/mapr/mahout). For example,
++if you want to compile Mahout version 0.7, checkout the "0.7-mapr" tag.
++
++$ mkdir 0.7-mapr
++$ cd 0.7-mapr
++$ git clone git@github.com/mapr/mahout.git .
++$ git checkout 0.7-mapr
++$ mvn clean -DskipTests
++
++The command line argument `-DskipTests` is optional and allows you to skip running 
++the unit tests.
++
++
++Using Mahout artifacts in your Maven Project
++
++Add the following dependency to your project's pom.xml
++<dependency>
++  <groupId>com.mapr.mahout</groupId>
++  <artifactId>mahout</artifactId>
++  <version>${mapr.mahout.version}</version>
++</dependency>
+diff --git a/bin/mahout b/bin/mahout
+index b679803..787fb9f 100755
+--- a/bin/mahout
++++ b/bin/mahout
+@@ -52,6 +52,14 @@
+ # * limitations under the License.
+ # */
+ 
++BASEMAPR=${MAPR_HOME:-/opt/mapr}
++if [ "$HADOOP_HOME" = "" ]; then
++  export HADOOP_HOME=${BASEMAPR}/hadoop/hadoop-0.20.2/
++fi
++
++env=$BASEMAPR/conf/env.sh
++[ -f $env ] && . $env
++
+ cygwin=false
+ case "`uname`" in
+ CYGWIN*) cygwin=true;;
+@@ -90,8 +98,24 @@ if [ "$MAHOUT_JAVA_HOME" != "" ]; then
+ fi
+ 
+ if [ "$JAVA_HOME" = "" ]; then
+-  echo "Error: JAVA_HOME is not set."
+-  exit 1
++  for candidate in \
++    /usr/lib/jvm/java-6-sun \
++    /usr/lib/jvm/java-1.6.0-sun-1.6.0.* \
++    /usr/lib/j2sdk1.6-sun \
++    /usr/java/jdk1.6* \
++    /usr/java/jre1.6* \
++    /Library/Java/Home \
++    /usr/java/default \
++    /usr/lib/jvm/default-java ; do
++    if [ -e $candidate/bin/java ]; then
++      export JAVA_HOME=$candidate
++      break
++    fi
++  done
++  if [ -z $JAVA_HOME ] ; then
++    echo "Error: JAVA_HOME is not set."
++    exit 1
++  fi
+ fi
+ 
+ JAVA=$JAVA_HOME/bin/java
+@@ -147,6 +171,15 @@ then
+   for f in $MAHOUT_HOME/lib/*.jar; do
+     CLASSPATH=${CLASSPATH}:$f;
+   done
++
++  for f in $BASEMAPR/*.jar; do
++    CLASSPATH=${CLASSPATH}:$f;
++  done
++
++  for f in $HADOOP_HOME/lib/*.jar; do
++    CLASSPATH=${CLASSPATH}:$f;
++  done
++
+ else
+   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/math/target/classes
+   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/core/target/classes
+@@ -195,6 +228,8 @@ MAHOUT_OPTS="$MAHOUT_OPTS -Dio.sort.factor=30"
+ MAHOUT_OPTS="$MAHOUT_OPTS -Dio.sort.mb=1024"
+ MAHOUT_OPTS="$MAHOUT_OPTS -Dio.file.buffer.size=32786"
+ 
++JAVA_LIBRARY_PATH="$JAVA_LIBRARY_PATH:$LD_LIBRARY_PATH:${BASEMAPR}/lib/"
++
+ if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
+   MAHOUT_OPTS="$MAHOUT_OPTS -Djava.library.path=$JAVA_LIBRARY_PATH"
+ fi
+diff --git a/core/pom.xml b/core/pom.xml
+index 7baf174..8c6b293 100644
+--- a/core/pom.xml
++++ b/core/pom.xml
+@@ -21,9 +21,9 @@
+   <modelVersion>4.0.0</modelVersion>
+ 
+   <parent>
+-    <groupId>org.apache.mahout</groupId>
++    <groupId>com.mapr.mahout</groupId>
+     <artifactId>mahout</artifactId>
+-    <version>0.7</version>
++    <version>0.7-mapr-SNAPSHOT</version>
+     <relativePath>../pom.xml</relativePath>
+   </parent>
+ 
+@@ -34,6 +34,10 @@
+ 
+   <packaging>jar</packaging>
+ 
++  <properties>
++    <mapr.hadoop.version>0.20.2-2.1.2-SNAPSHOT</mapr.hadoop.version>
++  </properties>
++
+   <build>
+     <plugins>
+       <plugin>
+@@ -213,8 +217,10 @@
+       </activation>
+       <dependencies>
+         <dependency>
+-          <groupId>org.apache.hadoop</groupId>
+-          <artifactId>hadoop-core</artifactId>
++          <groupId>com.mapr.hadoop</groupId>
++          <artifactId>hadoop-all</artifactId>
++          <version>${mapr.hadoop.version}</version>
++          <type>pom</type>
+         </dependency>
+       </dependencies>
+     </profile>
+diff --git a/core/src/main/java/org/apache/mahout/cf/taste/hadoop/pseudo/RecommenderJob.java b/core/src/main/java/org/apache/mahout/cf/taste/hadoop/pseudo/RecommenderJob.java
+index 02d1ba6..f2ed5d4 100644
+--- a/core/src/main/java/org/apache/mahout/cf/taste/hadoop/pseudo/RecommenderJob.java
++++ b/core/src/main/java/org/apache/mahout/cf/taste/hadoop/pseudo/RecommenderJob.java
+@@ -65,13 +65,13 @@ import org.apache.mahout.math.VarLongWritable;
+  * <p>
+  * For example, to get started trying this out, set up Hadoop in a pseudo-distributed manner:
+  * http://hadoop.apache.org/common/docs/current/quickstart.html You can stop at the point where it instructs
+- * you to copy files into HDFS.
++ * you to copy files into MapR-FS.
+  * </p>
+  *
+  * <p>
+  * Assume your preference data file is {@code input.csv}. You will also need to create a file containing
+  * all user IDs to write recommendations for, as something like {@code users.txt}. Place this input on
+- * HDFS like so:
++ * MapR-FS like so:
+  * </p>
+  *
+  * {@code hadoop fs -put input.csv input/input.csv; hadoop fs -put users.txt input/users.txt * }
+diff --git a/core/src/main/java/org/apache/mahout/clustering/lda/cvb/InMemoryCollapsedVariationalBayes0.java b/core/src/main/java/org/apache/mahout/clustering/lda/cvb/InMemoryCollapsedVariationalBayes0.java
+index dfc5476..bd47bd0 100644
+--- a/core/src/main/java/org/apache/mahout/clustering/lda/cvb/InMemoryCollapsedVariationalBayes0.java
++++ b/core/src/main/java/org/apache/mahout/clustering/lda/cvb/InMemoryCollapsedVariationalBayes0.java
+@@ -269,16 +269,16 @@ public class InMemoryCollapsedVariationalBayes0 extends AbstractJob {
+ 
+     Option inputDirOpt = obuilder.withLongName("input").withRequired(true).withArgument(
+       abuilder.withName("input").withMinimum(1).withMaximum(1).create()).withDescription(
+-      "The Directory on HDFS containing the collapsed, properly formatted files having "
++      "The Directory on MapR-FS containing the collapsed, properly formatted files having "
+           + "one doc per line").withShortName("i").create();
+ 
+     Option dictOpt = obuilder.withLongName("dictionary").withRequired(false).withArgument(
+       abuilder.withName("dictionary").withMinimum(1).withMaximum(1).create()).withDescription(
+       "The path to the term-dictionary format is ... ").withShortName("d").create();
+ 
+-    Option dfsOpt = obuilder.withLongName("dfs").withRequired(false).withArgument(
+-      abuilder.withName("dfs").withMinimum(1).withMaximum(1).create()).withDescription(
+-      "HDFS namenode URI").withShortName("dfs").create();
++    Option dfsOpt = obuilder.withLongName("maprfs").withRequired(false).withArgument(
++      abuilder.withName("maprfs").withMinimum(1).withMaximum(1).create()).withDescription(
++      "MapR-FS CLDB URI").withShortName("maprfs").create();
+ 
+     Option numTopicsOpt = obuilder.withLongName("numTopics").withRequired(true).withArgument(abuilder
+         .withName("numTopics").withMinimum(1).withMaximum(1)
+diff --git a/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsKeys.java b/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsKeys.java
+index a161fdb..ea04fb1 100644
+--- a/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsKeys.java
++++ b/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsKeys.java
+@@ -49,7 +49,7 @@ public interface EigencutsKeys {
+   String EPSILON = "org.apache.mahout.clustering.spectral.epsilon";
+ 
+   /**
+-   * Base path to the location on HDFS where the diagonal matrix (a vector)
++   * Base path to the location on MapR-FS where the diagonal matrix (a vector)
+    * and the list of eigenvalues will be stored for one of the map/reduce
+    * jobs in Eigencuts.
+    */
+diff --git a/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsSensitivityJob.java b/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsSensitivityJob.java
+index c6037e8..b10ea10 100644
+--- a/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsSensitivityJob.java
++++ b/core/src/main/java/org/apache/mahout/clustering/spectral/eigencuts/EigencutsSensitivityJob.java
+@@ -72,7 +72,7 @@ public final class EigencutsSensitivityJob {
+ 
+   /**
+    * Initializes the configuration tasks, loads the needed data into
+-   * the HDFS cache, and executes the job.
++   * the MapR-FS cache, and executes the job.
+    * 
+    * @param eigenvalues Vector of eigenvalues
+    * @param diagonal Vector representing the diagonal matrix
+diff --git a/core/src/main/java/org/apache/mahout/common/CommandLineUtil.java b/core/src/main/java/org/apache/mahout/common/CommandLineUtil.java
+index f349bfe..beaa604 100644
+--- a/core/src/main/java/org/apache/mahout/common/CommandLineUtil.java
++++ b/core/src/main/java/org/apache/mahout/common/CommandLineUtil.java
+@@ -56,7 +56,7 @@ public final class CommandLineUtil {
+     formatter.setGroup(group);
+     formatter.setPrintWriter(pw);
+     formatter.printHelp();
+-    formatter.setFooter("Specify HDFS directories while running on hadoop; else specify local file system directories");
++    formatter.setFooter("Specify MapR-FS directories while running on hadoop; else specify local file system directories");
+     formatter.printFooter();
+ 
+     pw.flush();
+diff --git a/core/src/main/java/org/apache/mahout/math/hadoop/decomposer/HdfsBackedLanczosState.java b/core/src/main/java/org/apache/mahout/math/hadoop/decomposer/HdfsBackedLanczosState.java
+index c0ffeb3..8cb15d6 100644
+--- a/core/src/main/java/org/apache/mahout/math/hadoop/decomposer/HdfsBackedLanczosState.java
++++ b/core/src/main/java/org/apache/mahout/math/hadoop/decomposer/HdfsBackedLanczosState.java
+@@ -97,7 +97,7 @@ public class HdfsBackedLanczosState extends LanczosState implements Configurable
+     try {
+       updateHdfsState();
+     } catch (IOException e) {
+-      log.error("Could not update HDFS state: ", e);
++      log.error("Could not update MapR-FS state: ", e);
+     }
+   }
+ 
+diff --git a/distribution/pom.xml b/distribution/pom.xml
+index 43976ad..e0a8260 100644
+--- a/distribution/pom.xml
++++ b/distribution/pom.xml
+@@ -18,12 +18,12 @@
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+-    <groupId>org.apache.mahout</groupId>
++    <groupId>com.mapr.mahout</groupId>
+     <artifactId>mahout</artifactId>
+-    <version>0.7</version>
++    <version>0.7-mapr-SNAPSHOT</version>
+     <relativePath>../pom.xml</relativePath>
+   </parent>
+-  <groupId>org.apache.mahout</groupId>
++  <groupId>com.mapr.mahout</groupId>
+   <artifactId>mahout-distribution</artifactId>
+   <version>0.7</version>
+   <name>Mahout Release Package</name>
+diff --git a/distribution/src/main/assembly/bin.xml b/distribution/src/main/assembly/bin.xml
+index 4f13c98..fc6fe62 100644
+--- a/distribution/src/main/assembly/bin.xml
++++ b/distribution/src/main/assembly/bin.xml
+@@ -28,13 +28,13 @@
+       </includes>
+       <outputDirectory>lib</outputDirectory>
+     </fileSet>
+-    <fileSet>
++    <!--<fileSet>
+       <directory>${project.basedir}/../examples/target/dependency</directory>
+       <includes>
+         <include>hadoop-*.jar</include>
+       </includes>
+       <outputDirectory>lib/hadoop</outputDirectory>
+-    </fileSet>
++    </fileSet>-->
+     <fileSet>
+       <directory>${project.basedir}/../math/target</directory>
+       <includes>
+diff --git a/examples/bin/cluster-reuters.sh b/examples/bin/cluster-reuters.sh
+index 7bdce6f..8912bd8 100755
+--- a/examples/bin/cluster-reuters.sh
++++ b/examples/bin/cluster-reuters.sh
+@@ -74,7 +74,7 @@ if [ ! -e ${WORK_DIR}/reuters-out-seqdir ]; then
+     $MAHOUT org.apache.lucene.benchmark.utils.ExtractReuters ${WORK_DIR}/reuters-sgm ${WORK_DIR}/reuters-out
+   fi
+ 
+-  MAHOUT_LOCAL=true $MAHOUT seqdirectory -i ${WORK_DIR}/reuters-out -o ${WORK_DIR}/reuters-out-seqdir -c UTF-8 -chunk 5
++  MAHOUT_LOCAL=true $MAHOUT seqdirectory -i ${WORK_DIR}/reuters-out -o file:///${WORK_DIR}/reuters-out-seqdir -c UTF-8 -chunk 5
+ fi
+ 
+ # we know reuters-out-seqdir exists on a local disk at
+diff --git a/examples/bin/cluster-syntheticcontrol.sh b/examples/bin/cluster-syntheticcontrol.sh
+index 5e54df1..e8a261c 100755
+--- a/examples/bin/cluster-syntheticcontrol.sh
++++ b/examples/bin/cluster-syntheticcontrol.sh
+@@ -60,14 +60,14 @@ fi
+ 
+ if [ "$HADOOP_HOME" != "" ]; then
+   echo "Checking the health of DFS..."
+-  $HADOOP_HOME/bin/hadoop fs -ls 
++  $HADOOP_HOME/bin/hadoop fs -ls /
+   if [ $? -eq 0 ];then 
+     echo "DFS is healthy... "
+-    echo "Uploading Synthetic control data to HDFS"
++    echo "Uploading Synthetic control data to MapR-FS"
+     $HADOOP_HOME/bin/hadoop fs -rmr testdata
+     $HADOOP_HOME/bin/hadoop fs -mkdir testdata
+     $HADOOP_HOME/bin/hadoop fs -put ${WORK_DIR}/synthetic_control.data testdata
+-    echo "Successfully Uploaded Synthetic control data to HDFS "
++    echo "Successfully Uploaded Synthetic control data to MapR-FS "
+ 
+     ../../bin/mahout org.apache.mahout.clustering.syntheticcontrol."${clustertype}".Job
+   else
+diff --git a/examples/pom.xml b/examples/pom.xml
+index 9724344..a634adf 100644
+--- a/examples/pom.xml
++++ b/examples/pom.xml
+@@ -21,9 +21,9 @@
+   <modelVersion>4.0.0</modelVersion>
+ 
+   <parent>
+-    <groupId>org.apache.mahout</groupId>
++    <groupId>com.mapr.mahout</groupId>
+     <artifactId>mahout</artifactId>
+-    <version>0.7</version>
++    <version>0.7-mapr-SNAPSHOT</version>
+     <relativePath>../pom.xml</relativePath>
+   </parent>
+ 
+@@ -59,6 +59,7 @@
+             </goals>
+             <configuration>
+               <!-- configure the plugin here -->
++              <excludeArtifactIds>hadoop-all,hadoop-core</excludeArtifactIds>
+             </configuration>
+           </execution>
+         </executions>
+diff --git a/examples/src/main/assembly/job.xml b/examples/src/main/assembly/job.xml
+index 6ec1e9f..abdf481 100644
+--- a/examples/src/main/assembly/job.xml
++++ b/examples/src/main/assembly/job.xml
+@@ -14,7 +14,8 @@
+       <scope>runtime</scope>
+       <outputDirectory>/</outputDirectory>
+       <excludes>
+-        <exclude>org.apache.hadoop:hadoop-core</exclude>
++        <exclude>com.mapr.hadoop:hadoop-all</exclude>
++        <exclude>com.mapr.hadoop:hadoop-core</exclude>
+         <!-- This jar contains a LICENSE file in the combined package. Another JAR includes
+           a licenses/ directory. That's OK except when unpacked on case-insensitive file
+           systems like Mac HFS+. Since this isn't really needed, we just remove it. -->
+@@ -23,4 +24,4 @@
+     </dependencySet>
+   </dependencySets>
+ </assembly>
+-  
+\ No newline at end of file
++  
+diff --git a/examples/src/main/java/org/apache/mahout/clustering/minhash/LastfmDataConverter.java b/examples/src/main/java/org/apache/mahout/clustering/minhash/LastfmDataConverter.java
+index 20ce95a..8e3c80e 100644
+--- a/examples/src/main/java/org/apache/mahout/clustering/minhash/LastfmDataConverter.java
++++ b/examples/src/main/java/org/apache/mahout/clustering/minhash/LastfmDataConverter.java
+@@ -192,10 +192,10 @@ public final class LastfmDataConverter {
+     if (args.length < 3) {
+       System.out.println("[Usage]: LastfmDataConverter <input> <output> <dataset>");
+       System.out.println("   <input>: Absolute path to the local file [usersha1-artmbid-artname-plays.tsv] ");
+-      System.out.println("  <output>: Absolute path to the HDFS output file");
++      System.out.println("  <output>: Absolute path to the MapR-FS output file");
+       System.out.println(" <dataset>: Either of the two Lastfm public datasets. "
+           + "Must be either 'Users360K' or 'Users1K'");
+-      System.out.println("Note:- Hadoop configuration pointing to HDFS namenode should be in classpath");
++      System.out.println("Note:- Hadoop configuration pointing to MapR-FS CLDB should be in classpath");
+       return;
+     }
+     Lastfm dataSet = Lastfm.valueOf(args[2]);
+@@ -206,9 +206,9 @@ public final class LastfmDataConverter {
+     Path output = new Path(args[1]);
+     boolean status = writeToSequenceFile(itemFeatures, output);
+     if (status) {
+-      System.out.println("Data converted and written successfully to HDFS location: [" + output + ']');
++      System.out.println("Data converted and written successfully to MapR-FS location: [" + output + ']');
+     } else {
+-      System.err.println("Error writing the converted data to HDFS location: [" + output + ']');
++      System.err.println("Error writing the converted data to MapR-FS location: [" + output + ']');
+     }
+   }
+ }
+diff --git a/integration/pom.xml b/integration/pom.xml
+index b1db7bb..4e833ed 100644
+--- a/integration/pom.xml
++++ b/integration/pom.xml
+@@ -22,9 +22,9 @@
+   <modelVersion>4.0.0</modelVersion>
+ 
+   <parent>
+-    <groupId>org.apache.mahout</groupId>
++    <groupId>com.mapr.mahout</groupId>
+     <artifactId>mahout</artifactId>
+-    <version>0.7</version>
++    <version>0.7-mapr-SNAPSHOT</version>
+     <relativePath>../pom.xml</relativePath>
+   </parent>
+ 
+@@ -59,6 +59,7 @@
+             </goals>
+             <configuration>
+               <!-- configure the plugin here -->
++              <excludeArtifactIds>hadoop-all,hadoop-core</excludeArtifactIds>
+             </configuration>
+           </execution>
+         </executions>
+diff --git a/integration/src/main/java/org/apache/mahout/text/wikipedia/WikipediaXmlSplitter.java b/integration/src/main/java/org/apache/mahout/text/wikipedia/WikipediaXmlSplitter.java
+index 6f58718..a9bc325 100644
+--- a/integration/src/main/java/org/apache/mahout/text/wikipedia/WikipediaXmlSplitter.java
++++ b/integration/src/main/java/org/apache/mahout/text/wikipedia/WikipediaXmlSplitter.java
+@@ -90,6 +90,7 @@ public final class WikipediaXmlSplitter {
+       "The output directory to place the splits in:\n"
+           + "local files:\n\t/var/data/wikipedia-xml-chunks or\n\tfile:///var/data/wikipedia-xml-chunks\n"
+           + "Hadoop DFS:\n\thdfs://wikipedia-xml-chunks\n"
++          + "MapR FS:\n\tmaprfs://wikipedia-xml-chunks\n"
+           + "AWS S3 (blocks):\n\ts3://bucket-name/wikipedia-xml-chunks\n"
+           + "AWS S3 (native files):\n\ts3n://bucket-name/wikipedia-xml-chunks\n")
+ 
+diff --git a/math/pom.xml b/math/pom.xml
+index 5622882..b7ecb6a 100644
+--- a/math/pom.xml
++++ b/math/pom.xml
+@@ -21,9 +21,9 @@
+   <modelVersion>4.0.0</modelVersion>
+ 
+   <parent>
+-    <groupId>org.apache.mahout</groupId>
++    <groupId>com.mapr.mahout</groupId>
+     <artifactId>mahout</artifactId>
+-    <version>0.7</version>
++    <version>0.7-mapr-SNAPSHOT</version>
+     <relativePath>../pom.xml</relativePath>
+   </parent>
+ 
+diff --git a/pom.xml b/pom.xml
+index 8b92123..4b50c20 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -18,14 +18,14 @@
+ 
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+-  <groupId>org.apache.mahout</groupId>
++  <groupId>com.mapr.mahout</groupId>
+   <artifactId>mahout</artifactId>
+-  <version>0.7</version>
++  <version>0.7-mapr-SNAPSHOT</version>
+ 
+   <parent>
+-    <groupId>org.apache</groupId>
+-    <artifactId>apache</artifactId>
+-    <version>9</version>
++    <groupId>com.mapr</groupId>
++    <artifactId>mapr-root</artifactId>
++    <version>1.0</version>
+   </parent>
+ 
+   <packaging>pom</packaging>
+@@ -97,8 +97,13 @@
+     <skipTests>false</skipTests>
+     <maven.clover.multiproject>true</maven.clover.multiproject>
+     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+-    <hadoop.version>0.20.204.0</hadoop.version>
+     <lucene.version>3.6.0</lucene.version>
++
++    <!-- MapR custom properties -->
++    <mapr.hadoop.version>0.20.2-2.1.2-SNAPSHOT</mapr.hadoop.version>
++    <apache.git.tag>0.7</apache.git.tag>
++    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+   </properties>
+   <issueManagement>
+     <system>Jira</system>
+@@ -189,168 +194,10 @@
+       </dependency>
+ 
+       <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-core</artifactId>
+-        <version>${hadoop.version}</version>
+-        <exclusions>
+-          <exclusion>
+-            <groupId>net.sf.kosmosfs</groupId>
+-            <artifactId>kfs</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jetty</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jetty-util</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>hsqldb</groupId>
+-            <artifactId>hsqldb</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>commons-el</groupId>
+-            <artifactId>commons-el</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>junit</groupId>
+-            <artifactId>junit</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>oro</groupId>
+-            <artifactId>oro</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jsp-2.1</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jsp-api-2.1</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>servlet-api-2.5</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>commons-net</groupId>
+-            <artifactId>commons-net</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>tomcat</groupId>
+-            <artifactId>jasper-runtime</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>tomcat</groupId>
+-            <artifactId>jasper-compiler</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>xmlenc</groupId>
+-            <artifactId>xmlenc</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>net.java.dev.jets3t</groupId>
+-            <artifactId>jets3t</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.eclipse.jdt</groupId>
+-            <artifactId>core</artifactId>
+-          </exclusion>
+-        </exclusions>
+-      </dependency>
+-      <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-common</artifactId>
+-        <version>${hadoop.version}</version>
+-        <exclusions>
+-          <exclusion>
+-            <groupId>net.sf.kosmosfs</groupId>
+-            <artifactId>kfs</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jetty</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jetty-util</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>hsqldb</groupId>
+-            <artifactId>hsqldb</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>commons-el</groupId>
+-            <artifactId>commons-el</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>junit</groupId>
+-            <artifactId>junit</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>oro</groupId>
+-            <artifactId>oro</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jsp-2.1</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>jsp-api-2.1</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.mortbay.jetty</groupId>
+-            <artifactId>servlet-api-2.5</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>commons-net</groupId>
+-            <artifactId>commons-net</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>tomcat</groupId>
+-            <artifactId>jasper-runtime</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>tomcat</groupId>
+-            <artifactId>jasper-compiler</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>xmlenc</groupId>
+-            <artifactId>xmlenc</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>net.java.dev.jets3t</groupId>
+-            <artifactId>jets3t</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.eclipse.jdt</groupId>
+-            <artifactId>core</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.slf4j</groupId>
+-            <artifactId>slf4j-api</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.slf4j</groupId>
+-            <artifactId>slf4j-jcl</artifactId>
+-          </exclusion>
+-          <exclusion>
+-            <groupId>org.slf4j</groupId>
+-            <artifactId>slf4j-log4j12</artifactId>
+-          </exclusion>
+-        </exclusions>
+-      </dependency>
+-      <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-mapreduce-client-core</artifactId>
+-        <version>${hadoop.version}</version>
+-      </dependency>
+-      <dependency>
+-        <groupId>org.apache.hadoop</groupId>
+-        <artifactId>hadoop-mapreduce-client-common</artifactId>
+-        <version>${hadoop.version}</version>
++        <groupId>com.mapr.hadoop</groupId>
++        <artifactId>hadoop-all</artifactId>
++        <version>${mapr.hadoop.version}</version>
++        <type>pom</type>
+       </dependency>
+ 
+       <dependency>
