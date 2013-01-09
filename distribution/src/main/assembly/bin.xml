@@ -28,13 +28,13 @@
       </includes>
       <outputDirectory>lib</outputDirectory>
     </fileSet>
-    <fileSet>
+    <!--<fileSet>
       <directory>${project.basedir}/../examples/target/dependency</directory>
       <includes>
         <include>hadoop-*.jar</include>
       </includes>
       <outputDirectory>lib/hadoop</outputDirectory>
-    </fileSet>
+    </fileSet>-->
     <fileSet>
       <directory>${project.basedir}/../math/target</directory>
       <includes>
