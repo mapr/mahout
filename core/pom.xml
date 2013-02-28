@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.mapr.mahout</groupId>
     <artifactId>mahout</artifactId>
-    <version>0.7-mapr-SNAPSHOT</version>
+    <version>0.7-mapr</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -35,7 +35,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <mapr.hadoop.version>0.20.2-2.1.2-SNAPSHOT</mapr.hadoop.version>
+    <mapr.hadoop.version>0.20.2-2.1.2</mapr.hadoop.version>
   </properties>
 
   <build>

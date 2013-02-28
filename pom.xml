@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mapr.mahout</groupId>
   <artifactId>mahout</artifactId>
-  <version>0.7-mapr-SNAPSHOT</version>
+  <version>0.7-mapr</version>
 
   <parent>
     <groupId>com.mapr</groupId>
@@ -100,7 +100,7 @@
     <lucene.version>3.6.0</lucene.version>
 
     <!-- MapR custom properties -->
-    <mapr.hadoop.version>0.20.2-2.1.2-SNAPSHOT</mapr.hadoop.version>
+    <mapr.hadoop.version>0.20.2-2.1.2</mapr.hadoop.version>
     <apache.git.tag>0.7</apache.git.tag>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
