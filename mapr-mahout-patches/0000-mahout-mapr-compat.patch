@@ -115,7 +115,7 @@ index 7baf174..8c6b293 100644
 +    <groupId>com.mapr.mahout</groupId>
      <artifactId>mahout</artifactId>
 -    <version>0.7</version>
-+    <version>0.7-mapr-SNAPSHOT</version>
++    <version>0.7-mapr</version>
      <relativePath>../pom.xml</relativePath>
    </parent>
  
@@ -124,7 +124,7 @@ index 7baf174..8c6b293 100644
    <packaging>jar</packaging>
  
 +  <properties>
-+    <mapr.hadoop.version>0.20.2-2.1.2-SNAPSHOT</mapr.hadoop.version>
++    <mapr.hadoop.version>0.20.2-2.1.2</mapr.hadoop.version>
 +  </properties>
 +
    <build>
@@ -252,7 +252,7 @@ index 43976ad..e0a8260 100644
 +    <groupId>com.mapr.mahout</groupId>
      <artifactId>mahout</artifactId>
 -    <version>0.7</version>
-+    <version>0.7-mapr-SNAPSHOT</version>
++    <version>0.7-mapr</version>
      <relativePath>../pom.xml</relativePath>
    </parent>
 -  <groupId>org.apache.mahout</groupId>
@@ -327,7 +327,7 @@ index 9724344..a634adf 100644
 +    <groupId>com.mapr.mahout</groupId>
      <artifactId>mahout</artifactId>
 -    <version>0.7</version>
-+    <version>0.7-mapr-SNAPSHOT</version>
++    <version>0.7-mapr</version>
      <relativePath>../pom.xml</relativePath>
    </parent>
  
@@ -401,7 +401,7 @@ index b1db7bb..4e833ed 100644
 +    <groupId>com.mapr.mahout</groupId>
      <artifactId>mahout</artifactId>
 -    <version>0.7</version>
-+    <version>0.7-mapr-SNAPSHOT</version>
++    <version>0.7-mapr</version>
      <relativePath>../pom.xml</relativePath>
    </parent>
  
@@ -437,7 +437,7 @@ index 5622882..b7ecb6a 100644
 +    <groupId>com.mapr.mahout</groupId>
      <artifactId>mahout</artifactId>
 -    <version>0.7</version>
-+    <version>0.7-mapr-SNAPSHOT</version>
++    <version>0.7-mapr</version>
      <relativePath>../pom.xml</relativePath>
    </parent>
  
@@ -453,7 +453,7 @@ index 8b92123..4b50c20 100644
 +  <groupId>com.mapr.mahout</groupId>
    <artifactId>mahout</artifactId>
 -  <version>0.7</version>
-+  <version>0.7-mapr-SNAPSHOT</version>
++  <version>0.7-mapr</version>
  
    <parent>
 -    <groupId>org.apache</groupId>
@@ -473,7 +473,7 @@ index 8b92123..4b50c20 100644
      <lucene.version>3.6.0</lucene.version>
 +
 +    <!-- MapR custom properties -->
-+    <mapr.hadoop.version>0.20.2-2.1.2-SNAPSHOT</mapr.hadoop.version>
++    <mapr.hadoop.version>0.20.2-2.1.2</mapr.hadoop.version>
 +    <apache.git.tag>0.7</apache.git.tag>
 +    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 +    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
