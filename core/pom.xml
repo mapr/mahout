@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.mapr.mahout</groupId>
+    <groupId>org.apache.mahout</groupId>
     <artifactId>mahout</artifactId>
     <version>0.7-mapr</version>
     <relativePath>../pom.xml</relativePath>
@@ -35,7 +35,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <mapr.hadoop.version>0.20.2-2.1.2</mapr.hadoop.version>
+    <mapr.hadoop.version>1.0.3-mapr-2.1.2.1</mapr.hadoop.version>
   </properties>
 
   <build>
@@ -217,10 +217,9 @@
       </activation>
       <dependencies>
         <dependency>
-          <groupId>com.mapr.hadoop</groupId>
-          <artifactId>hadoop-all</artifactId>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-core</artifactId>
           <version>${mapr.hadoop.version}</version>
-          <type>pom</type>
         </dependency>
       </dependencies>
     </profile>
