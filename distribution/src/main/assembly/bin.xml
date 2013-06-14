@@ -115,6 +115,7 @@
         <include>**/LICENSE*</include>
         <include>**/NOTICE*</include>
         <include>**/*.properties</include>
+        <include>**/pom*</include>
       </includes>
       <excludes>
         <exclude>target/**</exclude>
