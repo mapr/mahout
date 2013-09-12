@@ -67,14 +67,14 @@ if [ ! -f ${WORK_DIR}/synthetic_control.data ]; then
 fi
 if [ "$HADOOP_HOME" != "" ]; then
   echo "Checking the health of DFS..."
-  $HADOOP_HOME/bin/hadoop fs -ls 
+  $HADOOP_HOME/bin/hadoop fs -ls / 
   if [ $? -eq 0 ];then 
     echo "DFS is healthy... "
-    echo "Uploading Synthetic control data to HDFS"
+    echo "Uploading Synthetic control data to MapR-FS"
     $HADOOP_HOME/bin/hadoop fs -rmr testdata
     $HADOOP_HOME/bin/hadoop fs -mkdir testdata
     $HADOOP_HOME/bin/hadoop fs -put ${WORK_DIR}/synthetic_control.data testdata
-    echo "Successfully Uploaded Synthetic control data to HDFS "
+    echo "Successfully Uploaded Synthetic control data to MapR-FS"
 
     ../../bin/mahout org.apache.mahout.clustering.syntheticcontrol."${clustertype}".Job
   else

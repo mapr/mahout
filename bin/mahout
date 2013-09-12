@@ -52,6 +52,14 @@
 # * limitations under the License.
 # */
 
+BASEMAPR=${MAPR_HOME:-/opt/mapr}
+if [ "$HADOOP_HOME" = "" ]; then
+  export HADOOP_HOME=${BASEMAPR}/hadoop/hadoop-0.20.2/
+fi
+
+env=$BASEMAPR/conf/env.sh
+[ -f $env ] && . $env
+
 cygwin=false
 case "`uname`" in
 CYGWIN*) cygwin=true;;
@@ -90,8 +98,24 @@ if [ "$MAHOUT_JAVA_HOME" != "" ]; then
 fi
 
 if [ "$JAVA_HOME" = "" ]; then
-  echo "Error: JAVA_HOME is not set."
-  exit 1
+  for candidate in \
+    /usr/lib/jvm/java-6-sun \
+    /usr/lib/jvm/java-1.6.0-sun-1.6.0.* \
+    /usr/lib/j2sdk1.6-sun \
+    /usr/java/jdk1.6* \
+    /usr/java/jre1.6* \
+    /Library/Java/Home \
+    /usr/java/default \
+    /usr/lib/jvm/default-java ; do
+    if [ -e $candidate/bin/java ]; then
+      export JAVA_HOME=$candidate
+      break
+    fi
+  done
+  if [ -z $JAVA_HOME ] ; then
+    echo "Error: JAVA_HOME is not set."
+    exit 1
+  fi
 fi
 
 JAVA=$JAVA_HOME/bin/java
@@ -147,6 +171,15 @@ then
   for f in $MAHOUT_HOME/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
+
+  for f in $BASEMAPR/*.jar; do
+    CLASSPATH=${CLASSPATH}:$f;
+  done
+
+  for f in $HADOOP_HOME/lib/*.jar; do
+    CLASSPATH=${CLASSPATH}:$f;
+  done
+
 else
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/math/target/classes
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/core/target/classes
@@ -195,6 +228,8 @@ MAHOUT_OPTS="$MAHOUT_OPTS -Dio.sort.factor=30"
 MAHOUT_OPTS="$MAHOUT_OPTS -Dio.sort.mb=1024"
 MAHOUT_OPTS="$MAHOUT_OPTS -Dio.file.buffer.size=32786"
 
+JAVA_LIBRARY_PATH="$JAVA_LIBRARY_PATH:$LD_LIBRARY_PATH:${BASEMAPR}/lib/"
+
 if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
   MAHOUT_OPTS="$MAHOUT_OPTS -Djava.library.path=$JAVA_LIBRARY_PATH"
 fi
@@ -220,7 +255,8 @@ if [ ! -x "$HADOOP_BINARY" ] || [ "$MAHOUT_LOCAL" != "" ] ; then
   elif [ "$MAHOUT_LOCAL" != "" ] ; then
     echo "MAHOUT_LOCAL is set, running locally"
   fi
-    CLASSPATH="${CLASSPATH}:${MAHOUT_HOME}/lib/hadoop/*"
+#  echo "CLASSPATH: $CLASSPATH"
+    CLASSPATH="${CLASSPATH}:${MAHOUT_HOME/lib/hadoop/*}"
     case $1 in
     (classpath)
       echo $CLASSPATH

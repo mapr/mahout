@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.mahout</groupId>
     <artifactId>mahout</artifactId>
-    <version>0.8</version>
+    <version>0.8-mapr</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -33,6 +33,10 @@
   <description>Scalable machine learning libraries</description>
 
   <packaging>jar</packaging>
+
+  <properties>
+    <mapr.hadoop.version>1.0.3-mapr-2.1.2.1</mapr.hadoop.version>
+  </properties>
 
   <build>
     <resources>
@@ -216,6 +220,7 @@
         <dependency>
           <groupId>org.apache.hadoop</groupId>
           <artifactId>hadoop-core</artifactId>
+          <version>${mapr.hadoop.version}</version>
         </dependency>
       </dependencies>
     </profile>

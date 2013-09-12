@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.mahout</groupId>
   <artifactId>mahout</artifactId>
-  <version>0.8</version>
+  <version>0.8-mapr</version>
 
   <parent>
     <groupId>org.apache</groupId>
@@ -106,13 +106,56 @@
     <mjavadoc.version>2.9.1</mjavadoc.version>
     <hadoop.version>1.1.2</hadoop.version>
     <lucene.version>4.3.0</lucene.version>
+
+    <!-- MapR custom properties -->
+    <mapr.hadoop.version>1.0.3-mapr-2.1.2.1</mapr.hadoop.version>
+    <apache.git.tag>0.7</apache.git.tag>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
   <issueManagement>
     <system>Jira</system>
     <url>https://issues.apache.org/jira/browse/MAHOUT</url>
   </issueManagement>
 
+    <distributionManagement>
+        <repository>
+          <id>mapr.releases</id>
+          <name>${distMgmtReleasesName}</name>
+          <url>${distMgmtReleasesUrl}</url>
+        </repository>
+        <snapshotRepository>
+          <id>mapr.snapshots</id>
+          <name>${distMgmtSnapshotsName}</name>
+          <url>${distMgmtSnapshotsUrl}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
   <repositories>
+    <repository>
+      <id>repository.mapr.com</id>
+      <url>http://repository.mapr.com/maven/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+        <repository>
+            <id>central</id>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>Codehaus repository</id>
+            <url>http://repository.codehaus.org/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     <repository>
       <id>apache.snapshots</id>
       <name>Apache Snapshot Repository</name>
@@ -208,7 +251,7 @@
       <dependency>
         <groupId>org.apache.hadoop</groupId>
         <artifactId>hadoop-core</artifactId>
-        <version>${hadoop.version}</version>
+        <version>${mapr.hadoop.version}</version>
         <exclusions>
           <exclusion>
             <groupId>net.sf.kosmosfs</groupId>
@@ -906,12 +949,6 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/mahout/tags/mahout-0.8</developerConnection>
     <url>https://svn.apache.org/repos/asf/mahout/tags/mahout-0.8</url>
   </scm>
-  <distributionManagement>
-    <site>
-      <id>Website</id>
-      <url>scp://people.apache.org/home/isabel/public_html/mahout_site</url>
-    </site>
-  </distributionManagement>
   <reporting>
     <plugins>
       <!-- surefire runs unit tests -->
