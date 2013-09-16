@@ -20,7 +20,7 @@
 # Downloads the 20newsgroups dataset, trains and tests a classifier.
 #
 # To run:  change into the mahout directory and type:
-#  examples/bin/build-20news.sh
+# examples/bin/classify-20newsgroups.sh
 
 if [ "$1" = "--help" ] || [ "$1" = "--?" ]; then
   echo "This script runs SGD and Bayes classifiers over the classic 20 News Groups."
@@ -33,6 +33,8 @@ if [ "$0" != "$SCRIPT_PATH" ] && [ "$SCRIPT_PATH" != "" ]; then
 fi
 START_PATH=`pwd`
 
+MFS_WORK_DIR=/user/${USER}
+MFS_OUTPUT_DIR=${MFS_WORK_DIR}/20newsOutput
 WORK_DIR=/tmp/mahout-work-${USER}
 algorithm=( cnaivebayes naivebayes sgd clean)
 if [ -n "$1" ]; then
@@ -81,46 +83,57 @@ if [ "x$alg" == "xnaivebayes"  -o  "x$alg" == "xcnaivebayes" ]; then
   rm -rf ${WORK_DIR}/20news-all
   mkdir ${WORK_DIR}/20news-all
   cp -R ${WORK_DIR}/20news-bydate/*/* ${WORK_DIR}/20news-all
+  
+  echo "clean up existing directories on mfs"
+  hadoop fs -rmr ${MFS_WORK_DIR}/20news-all > /dev/null 2>&1 || true
+  hadoop fs -rmr ${MFS_OUTPUT_DIR} > /dev/null 2>&1 || true
 
+  echo "copying the files to mfs"
+  echo "creating directory 20news-all"
+  hadoop fs -mkdir ${MFS_WORK_DIR}/20news-all
+  hadoop fs -put ${WORK_DIR}/20news-bydate/ ${MFS_WORK_DIR}/20news-all
+  echo "creating intermediate output directory"
+  hadoop fs -mkdir ${MFS_OUTPUT_DIR} 
+  
   echo "Creating sequence files from 20newsgroups data"
   ./bin/mahout seqdirectory \
-    -i ${WORK_DIR}/20news-all \
-    -o ${WORK_DIR}/20news-seq
+    -i ${MFS_WORK_DIR}/20news-all \
+    -o ${MFS_OUTPUT_DIR}/20news-seq -ow
 
   echo "Converting sequence files to vectors"
   ./bin/mahout seq2sparse \
-    -i ${WORK_DIR}/20news-seq \
-    -o ${WORK_DIR}/20news-vectors  -lnorm -nv  -wt tfidf
+    -i ${MFS_OUTPUT_DIR}/20news-seq \
+    -o ${MFS_OUTPUT_DIR}/20news-vectors  -lnorm -nv  -wt tfidf
 
   echo "Creating training and holdout set with a random 80-20 split of the generated vector dataset"
   ./bin/mahout split \
-    -i ${WORK_DIR}/20news-vectors/tfidf-vectors \
-    --trainingOutput ${WORK_DIR}/20news-train-vectors \
-    --testOutput ${WORK_DIR}/20news-test-vectors  \
+    -i ${MFS_OUTPUT_DIR}/20news-vectors/tfidf-vectors \
+    --trainingOutput ${MFS_OUTPUT_DIR}/20news-train-vectors \
+    --testOutput ${MFS_OUTPUT_DIR}/20news-test-vectors  \
     --randomSelectionPct 40 --overwrite --sequenceFiles -xm sequential
 
   echo "Training Naive Bayes model"
   ./bin/mahout trainnb \
-    -i ${WORK_DIR}/20news-train-vectors -el \
-    -o ${WORK_DIR}/model \
-    -li ${WORK_DIR}/labelindex \
+    -i ${MFS_OUTPUT_DIR}/20news-train-vectors -el \
+    -o ${MFS_OUTPUT_DIR}/model \
+    -li ${MFS_OUTPUT_DIR}/labelindex \
     -ow $c
 
   echo "Self testing on training set"
 
   ./bin/mahout testnb \
-    -i ${WORK_DIR}/20news-train-vectors\
-    -m ${WORK_DIR}/model \
-    -l ${WORK_DIR}/labelindex \
-    -ow -o ${WORK_DIR}/20news-testing $c
+    -i ${MFS_OUTPUT_DIR}/20news-train-vectors\
+    -m ${MFS_OUTPUT_DIR}/model \
+    -l ${MFS_OUTPUT_DIR}/labelindex \
+    -ow -o ${MFS_OUTPUT_DIR}/20news-testing $c
 
   echo "Testing on holdout set"
 
   ./bin/mahout testnb \
-    -i ${WORK_DIR}/20news-test-vectors\
-    -m ${WORK_DIR}/model \
-    -l ${WORK_DIR}/labelindex \
-    -ow -o ${WORK_DIR}/20news-testing $c
+    -i ${MFS_OUTPUT_DIR}/20news-test-vectors\
+    -m ${MFS_OUTPUT_DIR}/model \
+    -l ${MFS_OUTPUT_DIR}/labelindex \
+    -ow -o ${MFS_OUTPUT_DIR}/20news-testing $c
 
 elif [ "x$alg" == "xsgd" ]; then
   if [ ! -e "/tmp/news-group.model" ]; then
@@ -132,6 +145,9 @@ elif [ "x$alg" == "xsgd" ]; then
 elif [ "x$alg" == "xclean" ]; then
   rm -rf ${WORK_DIR}
   rm -rf /tmp/news-group.model
+  echo "removing work and output directory from mfs"
+  hadoop fs -rmr ${MFS_WORK_DIR}/20news-all 
+  hadoop fs -rmr ${MFS_OUTPUT_DIR}
 fi
 # Remove the work directory
 #
