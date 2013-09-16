@@ -21,6 +21,7 @@
       <outputDirectory>/</outputDirectory>
       <useTransitiveFiltering>true</useTransitiveFiltering>
       <excludes>
+        <exclude>com.mapr.hadoop:hadoop-all</exclude>
         <exclude>org.apache.hadoop:hadoop-core</exclude>
         <!-- This jar contains a LICENSE file in the combined package. Another JAR includes
           a licenses/ directory. That's OK except when unpacked on case-insensitive file
