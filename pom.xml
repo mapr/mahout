@@ -23,9 +23,9 @@
   <version>0.8-mapr</version>
 
   <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>9</version>
+    <groupId>com.mapr</groupId>
+    <artifactId>mapr-root</artifactId>
+    <version>1.0</version>
   </parent>
 
   <packaging>pom</packaging>
@@ -118,18 +118,18 @@
     <url>https://issues.apache.org/jira/browse/MAHOUT</url>
   </issueManagement>
 
-    <distributionManagement>
-        <repository>
-          <id>mapr.releases</id>
-          <name>${distMgmtReleasesName}</name>
-          <url>${distMgmtReleasesUrl}</url>
-        </repository>
-        <snapshotRepository>
-          <id>mapr.snapshots</id>
-          <name>${distMgmtSnapshotsName}</name>
-          <url>${distMgmtSnapshotsUrl}</url>
-        </snapshotRepository>
-    </distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>mapr.staging</id>
+      <name>Mapr Staging Repository</name>
+      <url>${mapr-maven}</url>
+    </repository>
+    <site>
+      <id>mapr.website</id>
+      <url>www.mapr.com</url>
+      <name>MapR Site</name>
+    </site>
+  </distributionManagement>
 
   <repositories>
     <repository>
