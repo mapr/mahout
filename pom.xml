@@ -113,7 +113,7 @@
   <distributionManagement>
     <repository>
       <id>mapr.staging</id>
-      <name>Mapre Staging Repository</name>
+      <name>Mapr Staging Repository</name>
       <url>${mapr-maven}</url>
     </repository>
     <site>
