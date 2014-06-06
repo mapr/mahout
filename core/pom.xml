@@ -213,24 +213,28 @@
   
   <profiles>
     <profile>
-      <id>hadoop-0.20</id>
+      <id>hadoop1</id>
       <activation>
+        <activeByDefault>true</activeByDefault>
         <property>
-          <name>!hadoop.version</name>
+          <name>hadoop.version</name>
+          <value>1</value>
         </property>
       </activation>
       <dependencies>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
           <artifactId>hadoop-core</artifactId>
+          <version>${hadoop.1.version}</version>
         </dependency>
       </dependencies>
     </profile>
     <profile>
-      <id>hadoop-0.23</id>
+      <id>hadoop2</id>
       <activation>
         <property>
           <name>hadoop.version</name>
+          <value>2</value>
         </property>
       </activation>
       <dependencies>
