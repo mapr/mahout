@@ -89,7 +89,7 @@ public final class WikipediaXmlSplitter {
       abuilder.withName("outputDir").withMinimum(1).withMaximum(1).create()).withDescription(
       "The output directory to place the splits in:\n"
           + "local files:\n\t/var/data/wikipedia-xml-chunks or\n\tfile:///var/data/wikipedia-xml-chunks\n"
-          + "Hadoop DFS:\n\thdfs://wikipedia-xml-chunks\n"
+          + "MapR FS:\n\tmaprfs://wikipedia-xml-chunks\n"
           + "AWS S3 (blocks):\n\ts3://bucket-name/wikipedia-xml-chunks\n"
           + "AWS S3 (native files):\n\ts3n://bucket-name/wikipedia-xml-chunks\n")
 

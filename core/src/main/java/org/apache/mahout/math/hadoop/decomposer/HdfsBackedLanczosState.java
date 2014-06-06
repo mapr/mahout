@@ -95,7 +95,7 @@ public class HdfsBackedLanczosState extends LanczosState implements Configurable
     try {
       updateHdfsState();
     } catch (IOException e) {
-      log.error("Could not update HDFS state: ", e);
+      log.error("Could not update MapR-FS state: ", e);
     }
   }
 

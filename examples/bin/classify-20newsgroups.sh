@@ -93,7 +93,7 @@ if [ "x$alg" == "xnaivebayes"  -o  "x$alg" == "xcnaivebayes" ]; then
   cp -R ${WORK_DIR}/20news-bydate/*/* ${WORK_DIR}/20news-all
 
   if [ "$HADOOP_HOME" != "" ] && [ "$MAHOUT_LOCAL" == "" ] ; then
-    echo "Copying 20newsgroups data to HDFS"
+    echo "Copying 20newsgroups data to MapR-FS"
     set +e
     $HADOOP dfs -rmr ${WORK_DIR}/20news-all
     set -e
