@@ -23,9 +23,9 @@
   <version>0.9-mapr</version>
 
   <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>9</version>
+    <groupId>com.mapr</groupId>
+    <artifactId>mapr-root</artifactId>
+    <version>1.0</version>
   </parent>
 
   <packaging>pom</packaging>
@@ -122,15 +122,15 @@
 
   <distributionManagement>
     <repository>
-      <id>mapr.releases</id>
-      <name>${distMgmtReleasesName}</name>
-      <url>${distMgmtReleasesUrl}</url>
+      <id>mapr.staging</id>
+      <name>Mapr Staging Repository</name>
+      <url>${mapr-maven}</url>
     </repository>
-    <snapshotRepository>
-      <id>mapr.snapshots</id>
-      <name>${distMgmtSnapshotsName}</name>
-      <url>${distMgmtSnapshotsUrl}</url>
-    </snapshotRepository>
+    <site>
+      <id>mapr.website</id>
+      <url>www.mapr.com</url>
+      <name>MapR Site</name>
+    </site>
   </distributionManagement>
 
   <repositories>
