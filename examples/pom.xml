@@ -49,6 +49,7 @@
             </goals>
             <configuration>
               <!-- configure the plugin here -->
+              <excludeArtifactIds>hadoop-all,hadoop-core</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
