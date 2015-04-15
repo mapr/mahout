@@ -71,7 +71,7 @@ public final class PathFilters {
   }
 
   /**
-   * @return {@link PathFilter} that rejects paths whose file name starts with "_" (e.g. Cloudera
+   * @return {@link PathFilter} that rejects paths whose file name starts with "_" (e.g.
    * _SUCCESS files or Hadoop _logs), or "." (e.g. local hidden files), or ends with ".crc"
    */
   public static PathFilter logsCRCFilter() {
