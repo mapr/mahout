@@ -40,7 +40,7 @@ trait DrmLikeSuiteBase extends DistributedMahoutSuite with Matchers {
 
     println(inCoreA)
 
-    // Load back from hdfs
+    // Load back from MapR-FS
     val drmB = drmDfsRead(path = uploadPath)
 
     // Make sure keys are correctly identified as ints

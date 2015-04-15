@@ -86,10 +86,10 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     "surface\tsurface:4.498681156950466 nexus:0.6795961471815897"))
 
   /*
-    //Clustered Spark and HDFS, not a good everyday build test
+    //Clustered Spark and MAPR-FS, not a good everyday build test
     ItemSimilarityDriver.main(Array(
-        "--input", "hdfs://occam4:54310/user/pat/spark-itemsimilarity/cf-data.txt",
-        "--output", "hdfs://occam4:54310/user/pat/spark-itemsimilarity/similarityMatrices/",
+        "--input", "maprfs://occam4:54310/user/pat/spark-itemsimilarity/cf-data.txt",
+        "--output", "maprfs://occam4:54310/user/pat/spark-itemsimilarity/similarityMatrices/",
         "--master", "spark://occam4:7077",
         "--filter1", "purchase",
         "--filter2", "view",
@@ -98,12 +98,12 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
         "--rowIDColumn", "0",
         "--filterColumn", "1"))
   */
-  // local multi-threaded Spark with HDFS using large dataset
+  // local multi-threaded Spark with MAPR-FS using large dataset
   // not a good build test.
   /*
     ItemSimilarityDriver.main(Array(
-      "--input", "hdfs://occam4:54310/user/pat/xrsj/ratings_data.txt",
-      "--output", "hdfs://occam4:54310/user/pat/xrsj/similarityMatrices/",
+      "--input", "maprfs://occam4:54310/user/pat/xrsj/ratings_data.txt",
+      "--output", "maprfs://occam4:54310/user/pat/xrsj/similarityMatrices/",
       "--master", "local[4]",
       "--filter1", "purchase",
       "--filter2", "view",
@@ -144,7 +144,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // take account of one actual file
     val linesRdd = mahoutCtx.parallelize(lines).saveAsTextFile(InFile)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile,
       "--output", OutPath,
@@ -198,7 +198,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // take account of one actual file
     val linesRdd = mahoutCtx.parallelize(lines).saveAsTextFile(InFile)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile,
       "--output", OutPath,
@@ -250,7 +250,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // take account of one actual file
     val linesRdd = mahoutCtx.parallelize(lines).saveAsTextFile(InFile)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile,
       "--output", OutPath,
@@ -297,12 +297,12 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // this creates one part-0000 file in the directory
     mahoutCtx.parallelize(lines).coalesce(1, shuffle = true).saveAsTextFile(InDir)
 
-    // to change from using part files to a single .tsv file we'll need to use HDFS
+    // to change from using part files to a single .tsv file we'll need to use MAPR-FS
     val fs = FileSystem.get(new Configuration())
     //rename part-00000 to something.tsv
     fs.rename(new Path(InDir + "part-00000"), new Path(InPath))
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InPath,
       "--output", OutPath,
@@ -340,12 +340,12 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // this creates one part-0000 file in the directory
     mahoutCtx.parallelize(lines).coalesce(1, shuffle = true).saveAsTextFile(InDir)
 
-    // to change from using part files to a single .tsv file we'll need to use HDFS
+    // to change from using part files to a single .tsv file we'll need to use MAPR-FS
     val fs = FileSystem.get(new Configuration())
     //rename part-00000 to something.tsv
     fs.rename(new Path(InDir + "part-00000"), new Path(InPath))
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InPath,
       "--output", OutPath,
@@ -398,7 +398,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // this creates one part-0000 file in the directory
     mahoutCtx.parallelize(M1Lines).coalesce(1, shuffle = true).saveAsTextFile(InDirM1)
 
-    // to change from using part files to a single .tsv file we'll need to use HDFS
+    // to change from using part files to a single .tsv file we'll need to use MAPR-FS
     val fs = FileSystem.get(new Configuration())
     //rename part-00000 to something.tsv
     fs.rename(new Path(InDirM1 + "part-00000"), new Path(InPathM1))
@@ -406,7 +406,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     // this creates one part-0000 file in the directory
     mahoutCtx.parallelize(M2Lines).coalesce(1, shuffle = true).saveAsTextFile(InDirM2)
 
-    // to change from using part files to a single .tsv file we'll need to use HDFS
+    // to change from using part files to a single .tsv file we'll need to use MAPR-FS
     //rename part-00000 to tmp/some-location/something.tsv
     fs.rename(new Path(InDirM2 + "part-00000"), new Path(InPathM2))
 
@@ -465,7 +465,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     val linesRdd1 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile1)
     val linesRdd2 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile2)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile1,
       "--input2", InFile2,
@@ -532,7 +532,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     val linesRdd1 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile1)
     val linesRdd2 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile2)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile1,
       "--input2", InFile2,
@@ -595,7 +595,7 @@ class ItemSimilarityDriverSuite extends FunSuite with DistributedSparkSuite {
     val linesRdd1 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile1)
     val linesRdd2 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile2)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile1,
       "--input2", InFile2,
@@ -702,7 +702,7 @@ removed ==> u3	0	      0	      1	          0
     val linesRdd1 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile1)
     val linesRdd2 = mahoutCtx.parallelize(lines).saveAsTextFile(InFile2)
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     ItemSimilarityDriver.main(Array(
       "--input", InFile1,
       "--input2", InFile2,

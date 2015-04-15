@@ -17,13 +17,8 @@
 
 package org.apache.mahout.math.hadoop.stochasticsvd;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.util.Deque;
-import java.util.Random;
-
 import com.google.common.collect.Lists;
+import com.google.common.io.Closeables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -34,15 +29,14 @@ import org.apache.hadoop.io.compress.DefaultCodec;
 import org.apache.mahout.common.IOUtils;
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
-import org.apache.mahout.math.DenseMatrix;
-import org.apache.mahout.math.DenseVector;
-import org.apache.mahout.math.SequentialAccessSparseVector;
-import org.apache.mahout.math.SingularValueDecomposition;
-import org.apache.mahout.math.Vector;
-import org.apache.mahout.math.VectorWritable;
+import org.apache.mahout.math.*;
 import org.junit.Test;
 
-import com.google.common.io.Closeables;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.util.Deque;
+import java.util.Random;
 
 /**
  * 
@@ -76,7 +70,7 @@ public class LocalSSVDSolverSparseSequentialTest extends MahoutTestCase {
     conf.set("fs.default.name", "file:///");
 
     // conf.set("mapred.job.tracker","localhost:11011");
-    // conf.set("fs.default.name","hdfs://localhost:11010/");
+    // conf.set("fs.default.name","maprfs://localhost:11010/");
 
     Deque<Closeable> closeables = Lists.newLinkedList();;
     Random rnd = RandomUtils.getRandom();

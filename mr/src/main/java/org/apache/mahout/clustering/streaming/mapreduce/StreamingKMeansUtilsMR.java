@@ -127,7 +127,7 @@ public final class StreamingKMeansUtilsMR {
    * Writes centroids to a sequence file.
    * @param centroids the centroids to write.
    * @param path the path of the output file.
-   * @param conf the configuration for the HDFS to write the file to.
+   * @param conf the configuration for the MapR-FS to write the file to.
    * @throws java.io.IOException
    */
   public static void writeCentroidsToSequenceFile(Iterable<Centroid> centroids, Path path, Configuration conf)

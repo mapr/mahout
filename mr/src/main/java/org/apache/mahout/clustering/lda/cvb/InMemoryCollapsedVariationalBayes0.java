@@ -16,12 +16,6 @@
  */
 package org.apache.mahout.clustering.lda.cvb;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.cli2.CommandLine;
 import org.apache.commons.cli2.Group;
 import org.apache.commons.cli2.Option;
@@ -44,16 +38,15 @@ import org.apache.mahout.common.RandomUtils;
 import org.apache.mahout.common.commandline.DefaultOptionCreator;
 import org.apache.mahout.common.iterator.sequencefile.PathFilters;
 import org.apache.mahout.common.iterator.sequencefile.SequenceFileIterable;
-import org.apache.mahout.math.DenseMatrix;
-import org.apache.mahout.math.DenseVector;
-import org.apache.mahout.math.DistributedRowMatrixWriter;
-import org.apache.mahout.math.Matrix;
-import org.apache.mahout.math.NamedVector;
-import org.apache.mahout.math.SparseRowMatrix;
-import org.apache.mahout.math.Vector;
-import org.apache.mahout.math.VectorWritable;
+import org.apache.mahout.math.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Runs the same algorithm as {@link CVB0Driver}, but sequentially, in memory.  Memory requirements
@@ -266,7 +259,7 @@ public class InMemoryCollapsedVariationalBayes0 extends AbstractJob {
 
     Option inputDirOpt = obuilder.withLongName("input").withRequired(true).withArgument(
       abuilder.withName("input").withMinimum(1).withMaximum(1).create()).withDescription(
-      "The Directory on HDFS containing the collapsed, properly formatted files having "
+      "The Directory on MapR-FS containing the collapsed, properly formatted files having "
           + "one doc per line").withShortName("i").create();
 
     Option dictOpt = obuilder.withLongName("dictionary").withRequired(false).withArgument(
@@ -275,7 +268,7 @@ public class InMemoryCollapsedVariationalBayes0 extends AbstractJob {
 
     Option dfsOpt = obuilder.withLongName("dfs").withRequired(false).withArgument(
       abuilder.withName("dfs").withMinimum(1).withMaximum(1).create()).withDescription(
-      "HDFS namenode URI").withShortName("dfs").create();
+      "MapR-FS namenode URI").withShortName("dfs").create();
 
     Option numTopicsOpt = obuilder.withLongName("numTopics").withRequired(true).withArgument(abuilder
         .withName("numTopics").withMinimum(1).withMaximum(1)

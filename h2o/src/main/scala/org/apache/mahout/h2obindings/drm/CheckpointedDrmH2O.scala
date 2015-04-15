@@ -34,7 +34,7 @@ class CheckpointedDrmH2O[K: ClassTag](
   def uncache(): this.type = this
 
   /**
-    * Persist DRM to on-disk over HDFS in Mahout DRM format.
+    * Persist DRM to on-disk over MapR-FS in Mahout DRM format.
     */
   def dfsWrite(path: String): Unit = H2OHdfs.drmToFile(path, h2odrm)
 

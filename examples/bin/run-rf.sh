@@ -46,9 +46,9 @@ numrows=$1
 echo "Writing random data to $INPUT_PATH"
 ./examples/bin/create-rf-data.sh $numrows $INPUT_PATH
 
-# Put the test file in HDFS
+# Put the test file in MapR-FS
 if [ "$HADOOP_HOME" != "" ] && [ "$MAHOUT_LOCAL" == "" ] ; then
-  echo "Copying random data to HDFS"
+  echo "Copying random data to MapR-FS"
   set +e
   $DFSRM $WORK_DIR
   $DFS -mkdir -p $INPUT

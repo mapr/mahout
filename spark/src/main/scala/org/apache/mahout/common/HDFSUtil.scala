@@ -17,7 +17,7 @@
 
 package org.apache.mahout.common
 
-/** High level Hadoop version-specific hdfs manipulations we need in context of our operations. */
+/** High level Hadoop version-specific MapR-FS manipulations we need in context of our operations. */
 trait HDFSUtil {
 
   /** Read DRM header information off (H)DFS. */

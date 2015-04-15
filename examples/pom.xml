@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.mahout</groupId>
     <artifactId>mahout</artifactId>
-    <version>0.10.0</version>
+    <version>0.10.0-mapr</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -49,6 +49,7 @@
             </goals>
             <configuration>
               <!-- configure the plugin here -->
+              <excludeArtifactIds>hadoop-all,hadoop-core</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

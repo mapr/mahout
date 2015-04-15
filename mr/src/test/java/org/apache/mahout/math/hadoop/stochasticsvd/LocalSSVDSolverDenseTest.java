@@ -17,9 +17,6 @@
 
 package org.apache.mahout.math.hadoop.stochasticsvd;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -28,6 +25,9 @@ import org.apache.mahout.math.DenseMatrix;
 import org.apache.mahout.math.DenseVector;
 import org.apache.mahout.math.Vector;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * 
@@ -74,7 +74,7 @@ public class LocalSSVDSolverDenseTest extends MahoutTestCase {
     conf.set("fs.default.name", "file:///");
 
     // conf.set("mapred.job.tracker","localhost:11011");
-    // conf.set("fs.default.name","hdfs://localhost:11010/");
+    // conf.set("fs.default.name","maprfs://localhost:11010/");
 
     File tmpDir = getTestTempDir("svdtmp");
     conf.set("hadoop.tmp.dir", tmpDir.getAbsolutePath());
