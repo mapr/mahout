@@ -816,7 +816,7 @@
       <id>hadoop1</id>
       <properties>
         <hadoop.classifier>hadoop1</hadoop.classifier>
-        <hadoop.version>1.2.1</hadoop.version>
+        <hadoop.version>1.0.3-mapr-4.1.0</hadoop.version>
       </properties>
       <dependencyManagement>
         <dependencies>
@@ -838,7 +838,7 @@
       </activation>
       <properties>
         <hadoop.classifier>hadoop2</hadoop.classifier>
-        <hadoop.version>2.4.1</hadoop.version>
+        <hadoop.version>2.5.1-mapr-1503</hadoop.version>
       </properties>
       <dependencyManagement>
         <dependencies>
