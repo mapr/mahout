@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import com.google.common.collect.Sets;
 
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
@@ -55,7 +55,8 @@ public final class VectorDumper extends AbstractJob {
 
   private static final Logger log = LoggerFactory.getLogger(VectorDumper.class);
 
-  private VectorDumper() {}
+  private VectorDumper() {
+  }
 
   @Override
   public int run(String[] args) throws Exception {
@@ -84,9 +85,9 @@ public final class VectorDumper extends AbstractJob {
     addOption("sizeOnly", "sz", "Dump only the size of the vector");
     addOption("numItems", "ni", "Output at most <n> vecors", false);
     addOption("vectorSize", "vs", "Truncate vectors to <vs> length when dumping (most useful when in"
-            + " conjunction with -sort", false);
-    addOption(buildOption("filter", "fi", "Only dump out those vectors whose name matches the filter." 
-            + "  Multiple items may be specified by repeating the argument.", true, 1, Integer.MAX_VALUE, false, null));
+      + " conjunction with -sort", false);
+    addOption(buildOption("filter", "fi", "Only dump out those vectors whose name matches the filter."
+      + "  Multiple items may be specified by repeating the argument.", true, 1, Integer.MAX_VALUE, false, null));
 
     if (parseArguments(args, false, true) == null) {
       return -1;
@@ -118,13 +119,14 @@ public final class VectorDumper extends AbstractJob {
     }
 
     String[] dictionary = null;
-    if (hasOption("dictionary")) {
-      String dictFile = getOption("dictionary");
-      if ("text".equals(dictionaryType)) {
+    switch (dictionaryType) {
+      case "text":
         dictionary = VectorHelper.loadTermDictionary(new File(dictFile));
-      } else if ("sequencefile".equals(dictionaryType)) {
+        break;
+      case "sequencefile":
         dictionary = VectorHelper.loadTermDictionary(conf, dictFile);
-      } else {
+        break;
+      default:
         //TODO: support Lucene's FST as a dictionary type
         throw new IOException("Invalid dictionary type: " + dictionaryType);
       }
@@ -132,7 +134,7 @@ public final class VectorDumper extends AbstractJob {
 
     Set<String> filters;
     if (hasOption("filter")) {
-      filters = new HashSet<>(getOptions("filter"));
+      filters = Sets.newHashSet(getOptions("filter"));
     } else {
       filters = null;
     }
@@ -201,10 +203,10 @@ public final class VectorDumper extends AbstractJob {
           Vector vector;
           try {
             vector = ((VectorWritable)
-                    (transposeKeyValue ? keyWritable : valueWritable)).get();
+              (transposeKeyValue ? keyWritable : valueWritable)).get();
           } catch (ClassCastException e) {
             if ((transposeKeyValue ? keyWritable : valueWritable)
-                    instanceof WeightedPropertyVectorWritable) {
+              instanceof WeightedPropertyVectorWritable) {
               vector =
                   ((WeightedPropertyVectorWritable)
                       (transposeKeyValue ? keyWritable : valueWritable)).getVector();
@@ -212,39 +214,37 @@ public final class VectorDumper extends AbstractJob {
               throw e;
             }
           }
-          if (filters != null
-                  && vector instanceof NamedVector
-                  && !filters.contains(((NamedVector) vector).getName())) {
-            //we are filtering out this item, skip
-            continue;
-          }
-          if (sizeOnly) {
-            if (vector instanceof NamedVector) {
-              writer.write(((NamedVector) vector).getName());
-              writer.write(":");
+          if (filters == null
+            || !(vector instanceof NamedVector)
+            || filters.contains(((NamedVector) vector).getName())) {
+            if (sizeOnly) {
+              if (vector instanceof NamedVector) {
+                writer.write(((NamedVector) vector).getName());
+                writer.write(":");
+              } else {
+                writer.write(String.valueOf(i++));
+                writer.write(":");
+              }
+              writer.write(String.valueOf(vector.size()));
+              writer.write('\n');
+            } else if (nameOnly) {
+              if (vector instanceof NamedVector) {
+                writer.write(((NamedVector) vector).getName());
+                writer.write('\n');
+              }
             } else {
-              writer.write(String.valueOf(i++));
-              writer.write(":");
-            }
-            writer.write(String.valueOf(vector.size()));
-            writer.write('\n');
-          } else if (nameOnly) {
-            if (vector instanceof NamedVector) {
-              writer.write(((NamedVector) vector).getName());
+              String fmtStr;
+              if (useCSV) {
+                fmtStr = VectorHelper.vectorToCSVString(vector, namesAsComments);
+              } else {
+                fmtStr = VectorHelper.vectorToJson(vector, dictionary, maxIndexesPerVector,
+                  sortVectors);
+              }
+              writer.write(fmtStr);
               writer.write('\n');
             }
-          } else {
-            String fmtStr;
-            if (useCSV) {
-              fmtStr = VectorHelper.vectorToCSVString(vector, namesAsComments);
-            } else {
-              fmtStr = VectorHelper.vectorToJson(vector, dictionary, maxIndexesPerVector,
-                      sortVectors);
-            }
-            writer.write(fmtStr);
-            writer.write('\n');
+            itemCount++;
           }
-          itemCount++;
         }
       }
       writer.flush();
