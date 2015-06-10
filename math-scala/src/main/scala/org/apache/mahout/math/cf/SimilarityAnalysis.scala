@@ -94,10 +94,20 @@ object SimilarityAnalysis extends Serializable {
       similarityMatrices = similarityMatrices :+ drmSimilarityAtB
 
       drmB.uncache()
+
+      //debug
+      val atbRows = drmSimilarityAtB.nrow
+      val atbCols = drmSimilarityAtB.ncol
+      val i = 0
     }
 
     // Unpin downsampled interaction matrix
     drmA.uncache()
+
+    //debug
+    val ataRows = drmSimilarityAtA.nrow
+    val ataCols = drmSimilarityAtA.ncol
+    val i = 0
 
     // Return list of similarity matrices
     similarityMatrices
