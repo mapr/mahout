@@ -192,7 +192,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../examples/target/apidocs</directory>
-      <outputDirectory>docs/mahout-examples</outputDirectory>
+      <outputDirectory>docs/mahout-math-scala</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/..</directory>
