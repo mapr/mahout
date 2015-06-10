@@ -1,5 +1,17 @@
 Mahout Change Log
 
+Backported from release 0.10.1
+
+  MAHOUT-1704: Pare down dependency jar for h2o (apalumbo)
+
+  MAHOUT-1697: Fixed paths to which math-scala and spark modules docs get packaged under in bin distribution archive (sslavic)
+
+  MAHOUT-1696: QRDecomposition.solve(...) can return incorrect Matrix types (apalumbo)
+
+  MAHOUT-1690: CLONE - Some vector dumper flags are expecting arguments. (smarthi)
+
+  MAHOUT-1693: FunctionalMatrixView materializes row vectors in scala shell (apalumbo)
+
 Release 0.10.0 - unreleased
 
   MAHOUT-1630: Incorrect SparseColumnMatrix.numSlices() causes IndexException in toString() (Oleg Nitz, smarthi)
