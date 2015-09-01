@@ -32,6 +32,8 @@ if [ "$0" != "$SCRIPT_PATH" ] && [ "$SCRIPT_PATH" != "" ]; then
   cd $SCRIPT_PATH
 fi
 START_PATH=`pwd`
+MFS_WORK_DIR=/user/${USER}
+MFS_OUTPUT_DIR=${MFS_WORK_DIR}/20newsOutput
 
 # Set commands for dfs
 source ${START_PATH}/set-dfs-commands.sh
@@ -100,81 +102,91 @@ if  ( [ "x$alg" == "xnaivebayes-MapReduce" ] ||  [ "x$alg" == "xcnaivebayes-MapR
   rm -rf ${WORK_DIR}/20news-all
   mkdir ${WORK_DIR}/20news-all
   cp -R ${WORK_DIR}/20news-bydate/*/* ${WORK_DIR}/20news-all
+  echo "clean up existing directories on mfs"
+  hadoop fs -rmr ${MFS_WORK_DIR}/20news-all > /dev/null 2>&1 || true
+  hadoop fs -rmr ${MFS_OUTPUT_DIR} > /dev/null 2>&1 || true
+
+  echo "copying the files to mfs"
+  echo "creating directory 20news-all"
+  hadoop fs -mkdir ${MFS_WORK_DIR}/20news-all
+  hadoop fs -put ${WORK_DIR}/20news-bydate/ ${MFS_WORK_DIR}/20news-all
+  echo "creating intermediate output directory"
+  hadoop fs -mkdir ${MFS_OUTPUT_DIR}
 
   if [ "$HADOOP_HOME" != "" ] && [ "$MAHOUT_LOCAL" == "" ] ; then
-    echo "Copying 20newsgroups data to HDFS"
+    echo "Copying 20newsgroups data to MapR-FS"
     set +e
     $DFSRM ${WORK_DIR}/20news-all
     $DFS -mkdir ${WORK_DIR}
     $DFS -mkdir ${WORK_DIR}/20news-all
     set -e
     if [ $HVERSION -eq "1" ] ; then
-      echo "Copying 20newsgroups data to Hadoop 1 HDFS"
+      echo "Copying 20newsgroups data to Hadoop 1 MapR-FS"
       $DFS -put ${WORK_DIR}/20news-all ${WORK_DIR}/20news-all
     elif [ $HVERSION -eq "2" ] ; then
-      echo "Copying 20newsgroups data to Hadoop 2 HDFS"
+      echo "Copying 20newsgroups data to Hadoop 2 MapR-FS"
       $DFS -put ${WORK_DIR}/20news-all ${WORK_DIR}/
     fi
   fi
 
   echo "Creating sequence files from 20newsgroups data"
   ./bin/mahout seqdirectory \
-    -i ${WORK_DIR}/20news-all \
-    -o ${WORK_DIR}/20news-seq -ow
+    -i ${MFS_WORK_DIR}/20news-all \
+    -o ${MFS_OUTPUT_DIR}/20news-seq -ow
 
   echo "Converting sequence files to vectors"
   ./bin/mahout seq2sparse \
-    -i ${WORK_DIR}/20news-seq \
-    -o ${WORK_DIR}/20news-vectors  -lnorm -nv  -wt tfidf
+    -i ${MFS_OUTPUT_DIR}/20news-seq \
+    -o ${MFS_OUTPUT_DIR}/20news-vectors  -lnorm -nv  -wt tfidf
 
   echo "Creating training and holdout set with a random 80-20 split of the generated vector dataset"
   ./bin/mahout split \
-    -i ${WORK_DIR}/20news-vectors/tfidf-vectors \
-    --trainingOutput ${WORK_DIR}/20news-train-vectors \
-    --testOutput ${WORK_DIR}/20news-test-vectors  \
+    -i ${MFS_OUTPUT_DIR}/20news-vectors/tfidf-vectors \
+    --trainingOutput ${MFS_OUTPUT_DIR}/20news-train-vectors \
+    --testOutput ${MFS_OUTPUT_DIR}/20news-test-vectors  \
     --randomSelectionPct 40 --overwrite --sequenceFiles -xm sequential
 
     if [ "x$alg" == "xnaivebayes-MapReduce"  -o  "x$alg" == "xcnaivebayes-MapReduce" ]; then
 
       echo "Training Naive Bayes model"
       ./bin/mahout trainnb \
-        -i ${WORK_DIR}/20news-train-vectors \
-        -o ${WORK_DIR}/model \
-        -li ${WORK_DIR}/labelindex \
+        -i ${MFS_OUTPUT_DIR}/20news-train-vectors \
+        -o ${MFS_OUTPUT_DIR}/model \
+        -li ${MFS_OUTPUT_DIR}/labelindex \
         -ow $c
 
       echo "Self testing on training set"
 
       ./bin/mahout testnb \
-        -i ${WORK_DIR}/20news-train-vectors\
-        -m ${WORK_DIR}/model \
-        -l ${WORK_DIR}/labelindex \
-        -ow -o ${WORK_DIR}/20news-testing $c
+        -i ${MFS_OUTPUT_DIR}/20news-train-vectors\
+        -m ${MFS_OUTPUT_DIR}/model \
+        -l ${MFS_OUTPUT_DIR}/labelindex \
+        -ow -o ${MFS_OUTPUT_DIR}/20news-testing $c
 
       echo "Testing on holdout set"
 
       ./bin/mahout testnb \
-        -i ${WORK_DIR}/20news-test-vectors\
-        -m ${WORK_DIR}/model \
-        -l ${WORK_DIR}/labelindex \
-        -ow -o ${WORK_DIR}/20news-testing $c
+        -i ${MFS_OUTPUT_DIR}/20news-test-vectors\
+        -m ${MFS_OUTPUT_DIR}/model \
+        -l ${MFS_OUTPUT_DIR}/labelindex \
+        -ow -o ${MFS_OUTPUT_DIR}/20news-testing $c
 
     elif [ "x$alg" == "xnaivebayes-Spark" -o "x$alg" == "xcnaivebayes-Spark" ]; then
 
       echo "Training Naive Bayes model"
       ./bin/mahout spark-trainnb \
-        -i ${WORK_DIR}/20news-train-vectors \
-        -o ${WORK_DIR}/spark-model $c -ow -ma $MASTER
+        -i ${MFS_OUTPUT_DIR}/20news-train-vectors \
+        -o ${MFS_OUTPUT_DIR}/spark-model $c -ow -ma $MASTER
 
       echo "Self testing on training set"
       ./bin/mahout spark-testnb \
-        -i ${WORK_DIR}/20news-train-vectors\
-        -m ${WORK_DIR}/spark-model $c -ma $MASTER
+        -i ${MFS_OUTPUT_DIR}/20news-train-vectors\
+        -m ${MFS_OUTPUT_DIR}/spark-model $c -ma $MASTER
 
       echo "Testing on holdout set"
       ./bin/mahout spark-testnb \
-        -i ${WORK_DIR}/20news-test-vectors\
-        -m ${WORK_DIR}/spark-model $c -ma $MASTER
+        -i ${MFS_OUTPUT_DIR}/20news-test-vectors\
+        -m ${MFS_OUTPUT_DIR}/spark-model $c -ma $MASTER
         
     fi
 elif [ "x$alg" == "xsgd" ]; then
@@ -188,6 +200,9 @@ elif [ "x$alg" == "xclean" ]; then
   rm -rf $WORK_DIR
   rm -rf /tmp/news-group.model
   $DFSRM $WORK_DIR
+  echo "removing work and output directory from mfs"
+  hadoop fs -rmr ${MFS_WORK_DIR}/20news-all
+  hadoop fs -rmr ${MFS_OUTPUT_DIR}
 fi
 # Remove the work directory
 #

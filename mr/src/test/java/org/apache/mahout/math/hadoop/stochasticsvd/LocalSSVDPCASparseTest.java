@@ -100,7 +100,7 @@ public class LocalSSVDPCASparseTest extends MahoutTestCase {
     conf.set("fs.default.name", "file:///");
 
     // conf.set("mapred.job.tracker","localhost:11011");
-    // conf.set("fs.default.name","hdfs://localhost:11010/");
+    // conf.set("fs.default.name","maprfs://localhost:11010/");
 
     Deque<Closeable> closeables = Lists.newLinkedList();
     try {

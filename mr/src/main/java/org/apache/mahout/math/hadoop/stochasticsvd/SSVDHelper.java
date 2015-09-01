@@ -63,7 +63,7 @@ public final class SSVDHelper {
   }
 
   /**
-   * load single vector from an hdfs file (possibly presented as glob).
+   * load single vector from an MapR-FS file (possibly presented as glob).
    */
   static Vector loadVector(Path glob, Configuration conf) throws IOException {
 
@@ -93,7 +93,7 @@ public final class SSVDHelper {
   }
 
   /**
-   * save single vector into hdfs file.
+   * save single vector into MapR-FS file.
    *
    * @param v vector to save
    */

@@ -9,12 +9,12 @@
 #        22GB of free space to run this script.
 #
 #   $2 - Path to where the ASF Public Archive data is, untarred.
-#        If you are running Hadoop and the files are in HDFS, then
-#        this will need to be an HDFS path.   Default is $1/input
+#        If you are running Hadoop and the files are in MapR-FS, then
+#        this will need to be an MapR-FS path.   Default is $1/input
 #   $3 - Path to where this script saves the SequenceFile output.
 #        If you are running Hadoop and you want the sequence files
-#        saved to your HDFS then you need to set this value to an 
-#        HDFS path and make sure you set HADOOP_HOME so Mahout can
+#        saved to your MapR-FS then you need to set this value to an
+#        MapR-FS path and make sure you set HADOOP_HOME so Mahout can
 #        find Hadoop.  Default is $1/sequence-files
 #
 #
@@ -24,7 +24,7 @@
 #          Root directory of your Mahout distribution
 #
 #   HADOOP_HOME
-#          Only needed if you want to send output to HDFS
+#          Only needed if you want to send output to MapR-FS
 #
 # Example:
 #   ./prep_asf_mail_archives.sh /mnt/asf-mail-archives /mnt/asf-archives/asf-mail-archives-7-18-2011 /mnt/asf-mail-archives/output
@@ -70,18 +70,18 @@ else
 fi
 
 
-# Change this to an HDFS path if you are running Hadoop
+# Change this to an MapR-FS path if you are running Hadoop
 if [ "$3" != "" ]; then
   SEQFILE_OUTPUT_DIR=$3
 else
   SEQFILE_OUTPUT_DIR=$PREP_DIR/sequence-files
 fi
 
-# If output sent to HDFS, clear MAHOUT_LOCAL and make sure HADOOP_HOME is set
-if [[ "$SEQFILE_OUTPUT_DIR" = hdfs://* ]]; then
+# If output sent to MapR-FS, clear MAHOUT_LOCAL and make sure HADOOP_HOME is set
+if [[ "$SEQFILE_OUTPUT_DIR" = maprfs://* ]]; then
   export MAHOUT_LOCAL=
   if [ "$HADOOP_HOME" = "" ]; then
-    echo "Error: HADOOP_HOME must be set if you want to send output to HDFS."
+    echo "Error: HADOOP_HOME must be set if you want to send output to MapR-FS."
     exit 1
   fi
 else
@@ -96,7 +96,7 @@ echo "Running $0 with:
   HADOOP_HOME = $HADOOP_HOME"
 
 # Run Mahout in Local mode! Remove this if you want the
-# sequence files stored in your HDFS
+# sequence files stored in your MapR-FS
 
 
 # convert the extracted gz files into Hadoop SequenceFiles

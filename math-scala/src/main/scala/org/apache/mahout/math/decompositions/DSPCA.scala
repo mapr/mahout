@@ -36,7 +36,7 @@ object DSPCA {
    * @param p oversampling parameter
    * @param q number of power iterations (hint: use either 0 or 1)
    * @return (U,V,s). Note that U, V are non-checkpointed matrices (i.e. one needs to actually use them
-   *         e.g. save them to hdfs in order to trigger their computation.
+   *         e.g. save them to MapR-FS in order to trigger their computation.
    */
   def dspca[K: ClassTag](drmA: DrmLike[K], k: Int, p: Int = 15, q: Int = 0):
   (DrmLike[K], DrmLike[Int], Vector) = {

@@ -40,7 +40,7 @@ class MahoutOptionParser(programName: String) extends OptionParser[Map[String, A
     note("Input, output options")
     opt[String]('i', "input") required() action { (x, options) =>
       options + ("input" -> x)
-    } text ("Input path, may be a filename, directory name, or comma delimited list of HDFS supported URIs" +
+    } text ("Input path, may be a filename, directory name, or comma delimited list of MapR-FS supported URIs" +
       " (required)")
 
     if (numInputs == 2) {
@@ -56,7 +56,7 @@ class MahoutOptionParser(programName: String) extends OptionParser[Map[String, A
       } else {
         options + ("output" -> (x + "/"))
       }
-    } text ("Path for output directory, any HDFS supported URI (required)")
+    } text ("Path for output directory, any MapR-FS supported URI (required)")
 
   }
 

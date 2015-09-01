@@ -228,7 +228,7 @@ public final class SSVDSolver {
   /**
    * returns U path (if computation were requested and successful).
    *
-   * @return U output hdfs path, or null if computation was not completed for
+   * @return U output MapR-FS path, or null if computation was not completed for
    *         whatever reason.
    */
   public String getUPath() {
@@ -238,7 +238,7 @@ public final class SSVDSolver {
   /**
    * return V path ( if computation was requested and successful ) .
    *
-   * @return V output hdfs path, or null if computation was not completed for
+   * @return V output MapR-FS path, or null if computation was not completed for
    *         whatever reason.
    */
   public String getVPath() {

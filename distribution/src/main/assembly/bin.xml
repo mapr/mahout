@@ -45,6 +45,7 @@
       </includes>
       <outputDirectory>lib</outputDirectory>
     </fileSet>
+    <!-- Do not download hadoop jar, we add the hadoop jar in $HADOOP_HOME to mahout's classpath
     <fileSet>
       <directory>${project.basedir}/../examples/target/dependency</directory>
       <includes>
@@ -52,6 +53,7 @@
       </includes>
       <outputDirectory>lib/hadoop</outputDirectory>
     </fileSet>
+    -->
     <fileSet>
       <directory>${project.basedir}/../math/target</directory>
       <includes>

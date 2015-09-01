@@ -198,7 +198,7 @@ public final class BtJob {
        * nums).
        *
        * Note: if broadcast option is used, this comes from distributed cache
-       * files rather than hdfs path.
+       * files rather than MapR-FS path.
        */
 
       SequenceFileDirValueIterator<VectorWritable> rhatInput;

@@ -17,16 +17,16 @@
 
 package org.apache.mahout.common;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
 import org.apache.commons.cli2.Group;
 import org.apache.commons.cli2.OptionException;
 import org.apache.commons.cli2.util.HelpFormatter;
 import org.apache.commons.io.Charsets;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.GenericOptionsParser;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 public final class CommandLineUtil {
   
@@ -51,7 +51,7 @@ public final class CommandLineUtil {
     HelpFormatter formatter = new HelpFormatter();
     formatter.setGroup(group);
     formatter.setPrintWriter(pw);
-    formatter.setFooter("Specify HDFS directories while running on hadoop; else specify local file system directories");
+    formatter.setFooter("Specify MapR-FS directories while running on hadoop; else specify local file system directories");
     formatter.print();
   }
 

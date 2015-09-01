@@ -52,6 +52,15 @@
 # * limitations under the License.
 # */
 
+BASEMAPR=${MAPR_HOME:-/opt/mapr}
+CMD="hadoop version"
+res=`eval $CMD`
+HADOOP_VERSION=`readlink \`which hadoop\` | awk -F "/" '{print$5}'`
+export HADOOP_HOME=${BASEMAPR}/hadoop/${HADOOP_VERSION}/
+
+env=$BASEMAPR/conf/env.sh
+[ -f $env ] && . $env
+
 cygwin=false
 case "`uname`" in
 CYGWIN*) cygwin=true;;
@@ -119,8 +128,24 @@ if [ "$MAHOUT_JAVA_HOME" != "" ]; then
 fi
 
 if [ "$JAVA_HOME" = "" ]; then
-  echo "Error: JAVA_HOME is not set."
-  exit 1
+    for candidate in \
+    /usr/lib/jvm/java-6-sun \
+    /usr/lib/jvm/java-1.6.0-sun-1.6.0.* \
+    /usr/lib/j2sdk1.6-sun \
+    /usr/java/jdk1.6* \
+    /usr/java/jre1.6* \
+    /Library/Java/Home \
+    /usr/java/default \
+    /usr/lib/jvm/default-java ; do
+    if [ -e $candidate/bin/java ]; then
+      export JAVA_HOME=$candidate
+      break
+    fi
+  done
+  if [ -z $JAVA_HOME ] ; then
+    echo "Error: JAVA_HOME is not set."
+    exit 1
+  fi
 fi
 
 JAVA=$JAVA_HOME/bin/java
@@ -226,6 +251,13 @@ then
   for f in $MAHOUT_HOME/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
+  for f in $BASEMAPR/*.jar; do
+    CLASSPATH=${CLASSPATH}:$f;
+  done
+
+  for f in $HADOOP_HOME/lib/*.jar; do
+    CLASSPATH=${CLASSPATH}:$f;
+  done
 else
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/math/target/classes
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/hdfs/target/classes
@@ -299,6 +331,8 @@ case "$1" in
 
     MAHOUT_OPTS="$MAHOUT_OPTS -Dhadoop.log.dir=$MAHOUT_LOG_DIR"
     MAHOUT_OPTS="$MAHOUT_OPTS -Dhadoop.log.file=$MAHOUT_LOGFILE"
+
+    JAVA_LIBRARY_PATH="$JAVA_LIBRARY_PATH:$LD_LIBRARY_PATH:${BASEMAPR}/lib/"
    
 
     if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
