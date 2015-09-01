@@ -196,22 +196,22 @@ then
   if [ "$SPARK" != "1" ]; then
 
     # add dev targets if they exist
-    for f in $MAHOUT_HOME/examples/target/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
+    for f in $MAHOUT_HOME/examples/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
   fi
 
   # add scala dev target
-  for f in $MAHOUT_HOME/math-scala/target/mahout-math-scala_*.jar ; do
+  for f in $MAHOUT_HOME/mahout-math-scala_*.jar ; do
     CLASSPATH=${CLASSPATH}:$f;
   done
 
   if [ "$H2O" == "1" ]; then
-    for f in $MAHOUT_HOME/hdfs/target/mahout-hdfs-*.jar; do
+    for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/h2o/target/mahout-h2o*.jar; do
+    for f in $MAHOUT_HOME/h2o/mahout-h2o*.jar; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -220,7 +220,7 @@ then
   # add jars for running from the command line if we requested shell or spark CLI driver
   if [ "$SPARK" == "1" ]; then
 
-    for f in $MAHOUT_HOME/hdfs/target/mahout-hdfs-*.jar ; do
+    for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -228,11 +228,11 @@ then
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/spark/target/mahout-spark_*.jar ; do
+    for f in $MAHOUT_HOME/spark/mahout-spark_*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/spark-shell/target/mahout-spark-shell_*.jar ; do
+    for f in $MAHOUT_HOME/spark-/mahout-spark-shell_*.jar ; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
