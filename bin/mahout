@@ -53,10 +53,26 @@
 # */
 
 BASEMAPR=${MAPR_HOME:-/opt/mapr}
-CMD="hadoop version"
-res=`eval $CMD`
-HADOOP_VERSION=`readlink \`which hadoop\` | awk -F "/" '{print$5}'`
-export HADOOP_HOME=${BASEMAPR}/hadoop/${HADOOP_VERSION}/
+hadoopVersionFile="${BASEMAPR}/conf/hadoop_version"
+if [ -f ${hadoopVersionFile} ]
+then
+hadoop_mode=`cat ${hadoopVersionFile} | grep default_mode | cut -d '=' -f 2`
+    if [ "$hadoop_mode" = "yarn" ]; then
+	    version_hadoop=`cat ${hadoopVersionFile} | grep yarn_version | cut -d '=' -f 2`
+    elif [ "$hadoop_mode" = "classic" ]; then
+    	version_hadoop=`cat ${hadoopVersionFile} | grep classic_version | cut -d '=' -f 2`
+    else
+	    echo 'Unknown hadoop version'
+    fi
+
+else
+    version_cmd="hadoop version"
+    res=`eval $CMD`
+    HADOOP_VERSION_PATH=`readlink \`which hadoop\` | awk -F "/" '{print$5}'`
+    version_hadoop=`echo ${HADOOP_VERSION_PATH} | cut -d'-' -f 2`
+    confDir=${HADOOP_BASE_DIR}${version_hadoop}/conf/
+fi
+HADOOP_VERSION=hadoop-${version_hadoop}
 
 env=$BASEMAPR/conf/env.sh
 [ -f $env ] && . $env
@@ -119,7 +135,15 @@ fi
 
 # some directories
 THIS_DIR=`dirname "$THIS"`
-MAHOUT_HOME=`cd "$THIS_DIR/.." ; pwd`
+#MAHOUT_HOME=`cd "$THIS_DIR/.." ; pwd`
+if [ -d $BASEMAPR/mahout/mahout-* ]; then
+  cd $BASEMAPR/mahout/mahout-*
+  MAHOUT_HOME=`pwd`
+  export MAHOUT_HOME=`pwd`
+else
+  echo "Cannot export mahout home!"
+  exit 0
+fi
 
 # some Java parameters
 if [ "$MAHOUT_JAVA_HOME" != "" ]; then
@@ -219,6 +243,14 @@ then
 
   # add jars for running from the command line if we requested shell or spark CLI driver
   if [ "$SPARK" == "1" ]; then
+    if [ -d $BASEMAPR/spark/spark-* ]; then
+      cd $BASEMAPR/spark/spark-*
+      SPARK_HOME=`pwd`
+      export SPARK_HOME=`pwd`
+    else
+      echo "Cannot export spark home!"
+      exit 0
+    fi
 
     for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
@@ -232,7 +264,7 @@ then
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/spark-/mahout-spark-shell_*.jar ; do
+    for f in $MAHOUT_HOME/spark/mahout-spark-shell_*.jar ; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -341,7 +373,7 @@ case "$1" in
 
     CLASS=org.apache.mahout.driver.MahoutDriver
 
-    for f in $MAHOUT_HOME/examples/target/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
+    for f in $MAHOUT_HOME/examples/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
       if [ -e "$f" ]; then
         MAHOUT_JOB=$f
       fi
