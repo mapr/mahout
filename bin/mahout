@@ -264,26 +264,8 @@ then
        SPARK_CLASSPATH=$("${SPARK_CP_BIN}" 2>/dev/null)
        CLASSPATH="${CLASSPATH}:${SPARK_CLASSPATH}"
     else
-       if [ -f "$SPARK_HOME/RELEASE" ]; then
-          ASSEMBLY_DIR="$SPARK_HOME/lib"
-       else
-          ASSEMBLY_DIR="$SPARK_HOME/assembly/target/scala-$SPARK_SCALA_VERSION"
-       fi
-
-       num_jars="$(ls -1 "$ASSEMBLY_DIR" | grep "^spark-assembly.*hadoop.*\.jar$" | wc -l)"
-       if [ "$num_jars" -eq "0" -a -z "$SPARK_ASSEMBLY_JAR" ]; then
-          echo "Failed to find Spark assembly in $ASSEMBLY_DIR." 1>&2
-          exit -1
-       fi
-       ASSEMBLY_JARS="$(ls -1 "$ASSEMBLY_DIR" | grep "^spark-assembly.*hadoop.*\.jar$" || true)"
-       if [ "$num_jars" -gt "1" ]; then
-          echo "Found multiple Spark assembly jars in $ASSEMBLY_DIR:" 1>&2
-          echo "$ASSEMBLY_JARS" 1>&2
-          echo "Please remove all but one jar." 1>&2
-          exit -1
-       fi
-      SPARK_ASSEMBLY_JAR="${ASSEMBLY_DIR}/${ASSEMBLY_JARS}"
-      CLASSPATH="${CLASSPATH}:${SPARK_ASSEMBLY_JAR}"
+      echo "Cannot find Spark classpath. Is 'SPARK_HOME' set?"
+      exit -1
     fi
 
   fi
