@@ -17,15 +17,15 @@
 
 package org.apache.mahout.classifier.df.builder;
 
-import java.lang.reflect.Method;
-import java.util.Random;
-import java.util.Arrays;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Random;
+@Deprecated
 public final class DecisionTreeBuilderTest extends MahoutTestCase {
 
   /**

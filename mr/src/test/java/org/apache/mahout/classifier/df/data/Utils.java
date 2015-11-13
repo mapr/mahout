@@ -17,12 +17,6 @@
 
 package org.apache.mahout.classifier.df.data;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Random;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
@@ -32,10 +26,17 @@ import org.apache.hadoop.fs.Path;
 import org.apache.mahout.classifier.df.data.Dataset.Attribute;
 import org.apache.mahout.common.MahoutTestCase;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Random;
+
 /**
  * Helper methods used by the tests
  *
  */
+@Deprecated
 public final class Utils {
 
   private Utils() {}

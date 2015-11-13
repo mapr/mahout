@@ -17,14 +17,6 @@
 
 package org.apache.mahout.classifier.df;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -34,9 +26,18 @@ import org.apache.hadoop.io.Writable;
 import org.apache.mahout.classifier.df.node.Node;
 import org.apache.mahout.common.iterator.sequencefile.PathFilters;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Utility class that contains various helper methods
  */
+@Deprecated
 public final class DFUtils {
 
   private DFUtils() {

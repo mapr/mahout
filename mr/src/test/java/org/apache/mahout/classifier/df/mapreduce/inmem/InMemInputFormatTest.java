@@ -17,18 +17,18 @@
 
 package org.apache.mahout.classifier.df.mapreduce.inmem;
 
-import java.util.List;
-import java.util.Random;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.mahout.common.MahoutTestCase;
-import org.apache.mahout.common.RandomUtils;
 import org.apache.mahout.classifier.df.mapreduce.Builder;
 import org.apache.mahout.classifier.df.mapreduce.inmem.InMemInputFormat.InMemInputSplit;
 import org.apache.mahout.classifier.df.mapreduce.inmem.InMemInputFormat.InMemRecordReader;
+import org.apache.mahout.common.MahoutTestCase;
+import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Random;
+@Deprecated
 public final class InMemInputFormatTest extends MahoutTestCase {
 
   @Test

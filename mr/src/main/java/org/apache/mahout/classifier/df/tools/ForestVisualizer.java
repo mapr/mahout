@@ -17,12 +17,6 @@
 
 package org.apache.mahout.classifier.df.tools;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.cli2.CommandLine;
 import org.apache.commons.cli2.Group;
 import org.apache.commons.cli2.Option;
@@ -39,9 +33,16 @@ import org.apache.mahout.common.CommandLineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * This tool is to visualize the Decision Forest
  */
+@Deprecated
 public final class ForestVisualizer {
 
   private static final Logger log = LoggerFactory.getLogger(ForestVisualizer.class);

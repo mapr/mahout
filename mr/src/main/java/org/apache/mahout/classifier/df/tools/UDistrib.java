@@ -17,12 +17,6 @@
 
 package org.apache.mahout.classifier.df.tools;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Scanner;
-
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closeables;
 import org.apache.commons.cli2.CommandLine;
@@ -47,11 +41,18 @@ import org.apache.mahout.common.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Random;
+import java.util.Scanner;
+
 /**
  * This tool is used to uniformly distribute the class of all the tuples of the dataset over a given number of
  * partitions.<br>
  * This class can be used when the criterion variable is the categorical attribute.
  */
+@Deprecated
 public final class UDistrib {
   
   private static final Logger log = LoggerFactory.getLogger(UDistrib.class);

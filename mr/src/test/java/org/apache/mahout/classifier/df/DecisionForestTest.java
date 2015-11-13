@@ -17,9 +17,7 @@
 
 package org.apache.mahout.classifier.df;
 
-import java.util.List;
-import java.util.Random;
-
+import com.google.common.collect.Lists;
 import org.apache.mahout.classifier.df.builder.DecisionTreeBuilder;
 import org.apache.mahout.classifier.df.data.Data;
 import org.apache.mahout.classifier.df.data.DataLoader;
@@ -31,8 +29,9 @@ import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
-
+import java.util.List;
+import java.util.Random;
+@Deprecated
 public final class DecisionForestTest extends MahoutTestCase {
 
   private static final String[] TRAIN_DATA = {"sunny,85,85,FALSE,no",

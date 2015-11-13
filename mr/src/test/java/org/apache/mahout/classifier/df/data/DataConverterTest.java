@@ -17,12 +17,12 @@
 
 package org.apache.mahout.classifier.df.data;
 
-import java.util.Random;
-
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
+import java.util.Random;
+@Deprecated
 public final class DataConverterTest extends MahoutTestCase {
 
   private static final int ATTRIBUTE_COUNT = 10;

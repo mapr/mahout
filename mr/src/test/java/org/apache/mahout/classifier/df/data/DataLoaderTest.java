@@ -17,18 +17,17 @@
 
 package org.apache.mahout.classifier.df.data;
 
-import java.util.Collection;
-import java.util.Random;
-
 import com.google.common.collect.Lists;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.mahout.classifier.df.data.Dataset.Attribute;
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
-import org.apache.mahout.classifier.df.data.Dataset.Attribute;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.Random;
+@Deprecated
 public final class DataLoaderTest extends MahoutTestCase {
 
   private Random rng;

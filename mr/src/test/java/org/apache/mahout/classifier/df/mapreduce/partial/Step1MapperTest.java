@@ -17,13 +17,9 @@
 
 package org.apache.mahout.classifier.df.mapreduce.partial;
 
-import org.easymock.EasyMock;
-import java.util.Random;
-
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.mahout.common.RandomUtils;
 import org.apache.mahout.classifier.df.builder.TreeBuilder;
 import org.apache.mahout.classifier.df.data.Data;
 import org.apache.mahout.classifier.df.data.DataLoader;
@@ -32,10 +28,14 @@ import org.apache.mahout.classifier.df.data.Utils;
 import org.apache.mahout.classifier.df.node.Leaf;
 import org.apache.mahout.classifier.df.node.Node;
 import org.apache.mahout.common.MahoutTestCase;
+import org.apache.mahout.common.RandomUtils;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
+import java.util.Random;
+@Deprecated
 public final class Step1MapperTest extends MahoutTestCase {
 
   /**

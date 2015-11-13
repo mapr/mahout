@@ -17,13 +17,13 @@
 
 package org.apache.mahout.classifier.df.data;
 
-import java.util.Random;
-
+import org.apache.mahout.classifier.df.data.Dataset.Attribute;
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
-import org.apache.mahout.classifier.df.data.Dataset.Attribute;
 import org.junit.Test;
 
+import java.util.Random;
+@Deprecated
 public final class DescriptorUtilsTest extends MahoutTestCase {
 
   /**

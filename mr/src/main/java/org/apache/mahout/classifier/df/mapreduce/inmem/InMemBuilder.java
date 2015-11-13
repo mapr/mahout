@@ -17,12 +17,6 @@
 
 package org.apache.mahout.classifier.df.mapreduce.inmem;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FileSystem;
@@ -40,10 +34,17 @@ import org.apache.mahout.classifier.df.node.Node;
 import org.apache.mahout.common.Pair;
 import org.apache.mahout.common.iterator.sequencefile.SequenceFileIterable;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * MapReduce implementation where each mapper loads a full copy of the data in-memory. The forest trees are
  * splitted across all the mappers
  */
+@Deprecated
 public class InMemBuilder extends Builder {
   
   public InMemBuilder(TreeBuilder treeBuilder, Path dataPath, Path datasetPath, Long seed, Configuration conf) {

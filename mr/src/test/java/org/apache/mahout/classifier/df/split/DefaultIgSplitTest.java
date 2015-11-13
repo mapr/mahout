@@ -17,16 +17,16 @@
 
 package org.apache.mahout.classifier.df.split;
 
-import java.util.Random;
-
-import org.apache.mahout.common.MahoutTestCase;
-import org.apache.mahout.common.RandomUtils;
 import org.apache.mahout.classifier.df.data.Data;
 import org.apache.mahout.classifier.df.data.DataLoader;
 import org.apache.mahout.classifier.df.data.Dataset;
 import org.apache.mahout.classifier.df.data.Utils;
+import org.apache.mahout.common.MahoutTestCase;
+import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
+import java.util.Random;
+@Deprecated
 public final class DefaultIgSplitTest extends MahoutTestCase {
 
   private static final int NUM_ATTRIBUTES = 10;

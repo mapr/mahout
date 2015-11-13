@@ -17,14 +17,14 @@
 
 package org.apache.mahout.classifier.df.builder;
 
-import java.util.Random;
-import java.util.Arrays;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Random;
+@Deprecated
 public final class DefaultTreeBuilderTest extends MahoutTestCase {
 
   /**

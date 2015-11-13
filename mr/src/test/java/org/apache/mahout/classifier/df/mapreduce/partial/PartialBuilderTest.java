@@ -17,11 +17,6 @@
 
 package org.apache.mahout.classifier.df.mapreduce.partial;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Random;
-
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import org.apache.hadoop.conf.Configuration;
@@ -30,15 +25,20 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.Writer;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.mahout.common.MahoutTestCase;
-import org.apache.mahout.common.RandomUtils;
 import org.apache.mahout.classifier.df.builder.DefaultTreeBuilder;
 import org.apache.mahout.classifier.df.builder.TreeBuilder;
 import org.apache.mahout.classifier.df.mapreduce.MapredOutput;
 import org.apache.mahout.classifier.df.node.Leaf;
 import org.apache.mahout.classifier.df.node.Node;
+import org.apache.mahout.common.MahoutTestCase;
+import org.apache.mahout.common.RandomUtils;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Random;
+@Deprecated
 public final class PartialBuilderTest extends MahoutTestCase {
 
   private static final int NUM_MAPS = 5;

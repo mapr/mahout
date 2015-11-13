@@ -17,14 +17,14 @@
 
 package org.apache.mahout.classifier.df.data;
 
-import java.util.Arrays;
-import java.util.Random;
-
+import org.apache.mahout.classifier.df.data.conditions.Condition;
 import org.apache.mahout.common.MahoutTestCase;
 import org.apache.mahout.common.RandomUtils;
-import org.apache.mahout.classifier.df.data.conditions.Condition;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Random;
+@Deprecated
 public class DataTest extends MahoutTestCase {
 
   private static final int ATTRIBUTE_COUNT = 10;

@@ -17,11 +17,6 @@
 
 package org.apache.mahout.classifier.df.tools;
 
-import java.lang.reflect.Field;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.mahout.classifier.df.data.Data;
 import org.apache.mahout.classifier.df.data.Dataset;
@@ -31,9 +26,15 @@ import org.apache.mahout.classifier.df.node.Leaf;
 import org.apache.mahout.classifier.df.node.Node;
 import org.apache.mahout.classifier.df.node.NumericalNode;
 
+import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This tool is to visualize the Decision tree
  */
+@Deprecated
 public final class TreeVisualizer {
   
   private TreeVisualizer() {}

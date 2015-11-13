@@ -17,6 +17,12 @@
 
 package org.apache.mahout.classifier.df.mapreduce.inmem;
 
+import org.apache.mahout.classifier.df.mapreduce.inmem.InMemInputFormat.InMemInputSplit;
+import org.apache.mahout.common.MahoutTestCase;
+import org.apache.mahout.common.RandomUtils;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
@@ -25,13 +31,7 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
-
-import org.apache.mahout.common.MahoutTestCase;
-import org.apache.mahout.common.RandomUtils;
-import org.apache.mahout.classifier.df.mapreduce.inmem.InMemInputFormat.InMemInputSplit;
-import org.junit.Before;
-import org.junit.Test;
-
+@Deprecated
 public final class InMemInputSplitTest extends MahoutTestCase {
 
   private Random rng;
