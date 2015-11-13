@@ -17,17 +17,17 @@
 
 package org.apache.mahout.math;
 
-import java.util.Iterator;
-
 import com.google.common.collect.AbstractIterator;
+
+import java.util.Iterator;
 
 /** Implements subset view of a Vector */
 public class VectorView extends AbstractVector {
 
-  private Vector vector;
+  protected Vector vector;
 
   // the offset into the Vector
-  private int offset;
+  protected int offset;
 
   /** For serialization purposes only */
   public VectorView() {
