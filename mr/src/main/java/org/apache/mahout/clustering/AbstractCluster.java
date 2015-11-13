@@ -17,16 +17,6 @@
 
 package org.apache.mahout.clustering;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.mahout.common.parameters.Parameter;
 import org.apache.mahout.math.RandomAccessSparseVector;
@@ -37,6 +27,16 @@ import org.apache.mahout.math.VectorWritable;
 import org.apache.mahout.math.function.Functions;
 import org.apache.mahout.math.function.SquareRootFunction;
 import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractCluster implements Cluster {
   
@@ -353,7 +353,7 @@ public abstract class AbstractCluster implements Cluster {
   public static List<Object> formatVectorAsJson(Vector v, String[] bindings) throws IOException {
 
     boolean hasBindings = bindings != null;
-    boolean isSparse = !v.isDense() && v.getNumNondefaultElements() != v.size();
+    boolean isSparse = v.getNumNonZeroElements() != v.size();
 
     // we assume sequential access in the output
     Vector provider = v.isSequentialAccess() ? v : new SequentialAccessSparseVector(v);
