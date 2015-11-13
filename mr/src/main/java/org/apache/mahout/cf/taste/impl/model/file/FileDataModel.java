@@ -17,18 +17,6 @@
 
 package org.apache.mahout.cf.taste.impl.model.file;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.io.Closeables;
@@ -48,6 +36,18 @@ import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.common.iterator.FileLineIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -127,7 +127,7 @@ public class FileDataModel extends AbstractDataModel {
   private final File dataFile;
   private long lastModified;
   private long lastUpdateFileModified;
-  private final Splitter delimiterPattern;
+  private final transient Splitter delimiterPattern;
   private final boolean hasPrefValues;
   private DataModel delegate;
   private final ReentrantLock reloadLock;
