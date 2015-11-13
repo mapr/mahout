@@ -1,5 +1,10 @@
 Mahout Change Log
 
+Release 0.11.1 - unreleased
+
+  MAHOUT-1675: Remove MLP from codebase (ZJaffe via smarthi)
+
+
 Release 0.11.0 - unreleased
 
   MAHOUT-1744: Deprecate lucene2seq (apalumbo)
