@@ -30,6 +30,7 @@ import scala.reflect.ClassTag
 import scala.language.asInstanceOf
 import collection._
 import JavaConversions._
+import org.apache.spark.SparkContext._
 
 import org.apache.mahout.sparkbindings._
 
@@ -57,7 +58,7 @@ object SparkNaiveBayes extends NaiveBayes{
    *   aggregatedByLabelObservationDrm is a DrmLike[Int] of aggregated
    *   TF or TF-IDF counts per label
    */
-  override def extractLabelsAndAggregateObservations[K](stringKeyedObservations: DrmLike[K],
+  override def extractLabelsAndAggregateObservations[K: ClassTag](stringKeyedObservations: DrmLike[K],
                                                                   cParser: CategoryParser = seq2SparseCategoryParser)
                                                                  (implicit ctx: DistributedContext):
                                                                  (mutable.HashMap[String, Integer], DrmLike[Int]) = {
@@ -81,7 +82,7 @@ object SparkNaiveBayes extends NaiveBayes{
 
     // todo: has to be an better way of creating this map
     val categoryArray = aggregatedRdd.keys.takeOrdered(aggregatedRdd.count.toInt)
-    for(i <- categoryArray.indices){
+    for(i <- 0 until categoryArray.size){
       labelIndexMap.put(categoryArray(i), categoryIndex)
       categoryIndex += 1
     }

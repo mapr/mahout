@@ -2,7 +2,6 @@ package org.apache.mahout.h2obindings.drm
 
 import org.apache.mahout.h2obindings._
 import org.apache.mahout.math.Matrix
-import org.apache.mahout.math.drm.CacheHint.CacheHint
 import org.apache.mahout.math.drm._
 
 import scala.reflect._
@@ -16,8 +15,7 @@ import scala.reflect._
   */
 class CheckpointedDrmH2O[K: ClassTag](
   val h2odrm: H2ODrm,
-  val context: DistributedContext,
-  override val cacheHint: CacheHint
+  val context: DistributedContext
 ) extends CheckpointedDrm[K] {
 
   /**

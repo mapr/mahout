@@ -41,6 +41,7 @@ class ConfusionMatrix(private var labels: util.Collection[String] = null,
                       private var defaultLabel: String = "unknown")  {
   /**
    * Matrix Constructor
+   * @param m a DenseMatrix with RowLabelBindings
    */
 //   def this(m: Matrix) {
 //     this()
@@ -123,7 +124,7 @@ class ConfusionMatrix(private var labels: util.Collection[String] = null,
     if (truePositives + falsePositives == 0) {
       0
     } else {
-      truePositives.asInstanceOf[Double] / (truePositives + falsePositives)
+      (truePositives.asInstanceOf[Double]) / (truePositives + falsePositives)
     }
   }
 
@@ -153,7 +154,7 @@ class ConfusionMatrix(private var labels: util.Collection[String] = null,
     if (truePositives + falseNegatives == 0) {
       0
     } else {
-      truePositives.asInstanceOf[Double] / (truePositives + falseNegatives)
+      (truePositives.asInstanceOf[Double]) / (truePositives + falseNegatives)
     }
   }
 
@@ -217,10 +218,10 @@ class ConfusionMatrix(private var labels: util.Collection[String] = null,
   def getKappa: Double = {
     var a: Double = 0.0
     var b: Double = 0.0
-    for (i <- confusionMatrix.indices) {
+    for (i <- 0 until confusionMatrix.length) {
       a += confusionMatrix(i)(i)
       var br: Int = 0
-      for (j <- confusionMatrix.indices) {
+      for (j <- 0 until confusionMatrix.length) {
         br += confusionMatrix(i)(j)
       }
       var bc: Int = 0
@@ -254,9 +255,9 @@ class ConfusionMatrix(private var labels: util.Collection[String] = null,
    */
   def getNormalizedStats: RunningAverageAndStdDev = {
     val summer = new FullRunningAverageAndStdDev()
-    for (d <- confusionMatrix.indices) {
+    for (d <- 0 until  confusionMatrix.length) {
       var total: Double = 0.0
-      for (j <- confusionMatrix.indices) {
+      for (j <- 0 until  confusionMatrix.length) {
         total += confusionMatrix(d)(j)
       }
       summer.addDatum(confusionMatrix(d)(d) / (total + 0.000001))
@@ -373,7 +374,7 @@ class ConfusionMatrix(private var labels: util.Collection[String] = null,
     assert(sorted.length == length, "One label, one row")
     for (i <- 0 until length) {
       if (sorted(i) == null) {
-        assert(assertion = false, "One label, one row")
+        assert(false, "One label, one row")
       }
     }
   }
