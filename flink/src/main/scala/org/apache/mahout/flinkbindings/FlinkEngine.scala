@@ -43,7 +43,7 @@ object FlinkEngine extends DistributedEngine {
   var hdfsUtils: HDFSUtil = Hadoop2HDFSUtil
 
   /**
-    * Load DRM from hdfs (as in Mahout DRM format).
+    * Load DRM from MapR-FS (as in Mahout DRM format).
     *
     * @param path   The DFS path to load from
     * @param parMin Minimum parallelism after load (equivalent to #par(min=...)).

@@ -45,6 +45,7 @@
       </includes>
       <outputDirectory>lib</outputDirectory>
     </fileSet>
+    <!-- Do not download hadoop jar, we add the hadoop jar in $HADOOP_HOME to mahout's classpath
     <fileSet>
       <directory>${project.basedir}/../examples/target/dependency</directory>
       <includes>
@@ -52,8 +53,21 @@
       </includes>
       <outputDirectory>lib/hadoop</outputDirectory>
     </fileSet>
+    -->
     <fileSet>
       <directory>${project.basedir}/../math/target</directory>
+      <includes>
+        <include>mahout-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*sources.jar</exclude>
+        <exclude>*javadoc.jar</exclude>
+        <exclude>*tests.jar</exclude>
+      </excludes>
+      <outputDirectory/>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../math-scala/target</directory>
       <includes>
         <include>mahout-*.jar</include>
       </includes>
@@ -75,7 +89,46 @@
         <exclude>*javadoc.jar</exclude>
         <exclude>*tests.jar</exclude>
       </excludes>
-      <outputDirectory/>
+      <outputDirectory>hdfs</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../h2o/target</directory>
+      <includes>
+        <include>mahout-*.job</include>
+        <include>mahout-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*sources.jar</exclude>
+        <exclude>*javadoc.jar</exclude>
+        <exclude>*tests.jar</exclude>
+      </excludes>
+      <outputDirectory>h2o</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../spark/target</directory>
+      <includes>
+        <include>mahout-*.job</include>
+        <include>mahout-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*sources.jar</exclude>
+        <exclude>*javadoc.jar</exclude>
+        <exclude>*tests.jar</exclude>
+      </excludes>
+      <outputDirectory>spark</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/../spark-shell/target</directory>
+      <includes>
+        <include>mahout-*.job</include>
+        <include>mahout-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*sources.jar</exclude>
+        <exclude>*javadoc.jar</exclude>
+        <exclude>*tests.jar</exclude>
+      </excludes>
+      <outputDirectory>spark-shell</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../mr/target</directory>
@@ -114,7 +167,7 @@
         <exclude>*javadoc.jar</exclude>
         <exclude>*tests.jar</exclude>
       </excludes>
-      <outputDirectory/>
+      <outputDirectory>examples</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/../math-scala/target</directory>

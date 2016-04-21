@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.net.URI;
 
 /**
- * SequenceFile I/O class (on HDFS)
+ * SequenceFile I/O class (on MapR-FS)
  */
 public class H2OHdfs {
   /**

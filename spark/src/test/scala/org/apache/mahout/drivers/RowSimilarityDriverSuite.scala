@@ -60,12 +60,12 @@ class RowSimilarityDriverSuite extends FunSuite with DistributedSparkSuite  {
     // this creates one part-0000 file in the directory
     mahoutCtx.parallelize(TextDocs).coalesce(1, shuffle=true).saveAsTextFile(inDir)
 
-    // to change from using part files to a single .tsv file we'll need to use HDFS
+    // to change from using part files to a single .tsv file we'll need to use MAPR-FS
     val fs = FileSystem.get(new Configuration())
     //rename part-00000 to something.tsv
     fs.rename(new Path(inDir + "part-00000"), new Path(inPath))
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     RowSimilarityDriver.main(Array(
       "--input", inPath,
       "--output", outPath,
@@ -108,12 +108,12 @@ class RowSimilarityDriverSuite extends FunSuite with DistributedSparkSuite  {
     // this creates one part-0000 file in the directory
     mahoutCtx.parallelize(TextDocs).coalesce(1, shuffle=true).saveAsTextFile(inDir)
 
-    // to change from using part files to a single .tsv file we'll need to use HDFS
+    // to change from using part files to a single .tsv file we'll need to use MAPR-FS
     val fs = FileSystem.get(new Configuration())
     //rename part-00000 to something.tsv
     fs.rename(new Path(inDir + "part-00000"), new Path(inPath))
 
-    // local multi-threaded Spark with default HDFS
+    // local multi-threaded Spark with default MAPR-FS
     RowSimilarityDriver.main(Array(
       "--input", inPath,
       "--output", outPath,

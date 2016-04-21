@@ -57,7 +57,7 @@ object H2OEngine extends DistributedEngine {
     new H2OBCast(v)
 
   /**
-    * Load DRM from hdfs (as in Mahout DRM format)
+    * Load DRM from MapR-FS (as in Mahout DRM format)
     *
     *  @param path Path to DRM file
     *  @param parMin Hint of minimum number of partitions to split while distributing

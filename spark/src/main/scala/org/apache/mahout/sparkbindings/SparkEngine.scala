@@ -132,7 +132,7 @@ object SparkEngine extends DistributedEngine {
   def drmBroadcast(m: Matrix)(implicit dc: DistributedContext): BCast[Matrix] = dc.broadcast(m)
 
   /**
-    * Load DRM from hdfs (as in Mahout DRM format)
+    * Load DRM from MapR-FS (as in Mahout DRM format)
     *
     * @param path
     * @param sc spark context (wanted to make that implicit, doesn't work in current version of

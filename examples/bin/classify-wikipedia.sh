@@ -111,7 +111,7 @@ if [ "x$alg" == "xCBayes" ] || [ "x$alg" == "xBinaryCBayes" ] ; then
   fi
 
   if [ "$HADOOP_HOME" != "" ] && [ "$MAHOUT_LOCAL" == "" ] ; then
-    echo "Copying wikipedia data to HDFS"
+    echo "Copying wikipedia data to MapR-FS"
     set +e
     $DFSRM ${WORK_DIR}/wikixml
     $DFS -mkdir -p ${WORK_DIR}

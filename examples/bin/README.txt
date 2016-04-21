@@ -1,7 +1,7 @@
 This directory contains helpful shell scripts for working with some of Mahout's examples.  
 
-To set a non-default temporary work directory: `export MAHOUT_WORK_DIR=/path/in/hdfs/to/temp/dir`
-  Note that this requires the same path to be writable both on the local file system as well as on HDFS.
+To set a non-default temporary work directory: `export MAHOUT_WORK_DIR=/path/in/maprfs/to/temp/dir`
+  Note that this requires the same path to be writable both on the local file system as well as on MapR-FS.
 
 Here's a description of what each does:
 

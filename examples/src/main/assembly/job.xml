@@ -38,6 +38,7 @@
       <outputDirectory>/</outputDirectory>
       <useTransitiveFiltering>true</useTransitiveFiltering>
       <excludes>
+        <exclude>com.mapr.hadoop:hadoop-all</exclude>
         <exclude>org.apache.hadoop:hadoop-core</exclude>
       </excludes>
     </dependencySet>

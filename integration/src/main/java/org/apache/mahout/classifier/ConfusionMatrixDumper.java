@@ -225,7 +225,7 @@ public final class ConfusionMatrixDumper extends AbstractJob {
     return stripped;
   }
   
-  // TODO: test - this should work with HDFS files
+  // TODO: test - this should work with MapR-FS files
   private static void readSeqFile(Path path, Text key, MatrixWritable m) throws IOException {
     Configuration conf = new Configuration();
     FileSystem fs = FileSystem.get(conf);
@@ -233,7 +233,7 @@ public final class ConfusionMatrixDumper extends AbstractJob {
     reader.next(key, m);
   }
   
-  // TODO: test - this might not work with HDFS files?
+  // TODO: test - this might not work with MapR-FS files?
   // after all, it does no seeks
   private static PrintStream getPrintStream(String outputFilename) throws IOException {
     if (outputFilename != null) {

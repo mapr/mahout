@@ -52,6 +52,31 @@
 # * limitations under the License.
 # */
 
+BASEMAPR=${MAPR_HOME:-/opt/mapr}
+hadoopVersionFile="${BASEMAPR}/conf/hadoop_version"
+if [ -f ${hadoopVersionFile} ]
+then
+hadoop_mode=`cat ${hadoopVersionFile} | grep default_mode | cut -d '=' -f 2`
+  if [ "$hadoop_mode" = "yarn" ]; then
+    version_hadoop=`cat ${hadoopVersionFile} | grep yarn_version | cut -d '=' -f 2`
+  elif [ "$hadoop_mode" = "classic" ]; then
+    version_hadoop=`cat ${hadoopVersionFile} | grep classic_version | cut -d '=' -f 2`
+  else
+    echo 'Unknown hadoop version'
+  fi
+else
+  version_cmd="hadoop version"
+  res=`eval $CMD`
+  HADOOP_VERSION_PATH=`readlink \`which hadoop\` | awk -F "/" '{print$5}'`
+  version_hadoop=`echo ${HADOOP_VERSION_PATH} | cut -d'-' -f 2`
+  confDir=${HADOOP_BASE_DIR}${version_hadoop}/conf/
+fi
+HADOOP_VERSION=hadoop-${version_hadoop}
+
+env=$BASEMAPR/conf/env.sh
+[ -f $env ] && . $env
+
+
 cygwin=false
 case "`uname`" in
 CYGWIN*) cygwin=true;;
@@ -110,7 +135,15 @@ fi
 
 # some directories
 THIS_DIR=`dirname "$THIS"`
-MAHOUT_HOME=`cd "$THIS_DIR/.." ; pwd`
+#MAHOUT_HOME=`cd "$THIS_DIR/.." ; pwd`
+if [ -d $BASEMAPR/mahout/mahout-* ]; then
+  cd $BASEMAPR/mahout/mahout-*
+  MAHOUT_HOME=`pwd`
+  export MAHOUT_HOME=`pwd`
+else
+  echo "Cannot export mahout home!"
+  exit 0
+fi
 
 # some Java parameters
 if [ "$MAHOUT_JAVA_HOME" != "" ]; then
@@ -119,8 +152,24 @@ if [ "$MAHOUT_JAVA_HOME" != "" ]; then
 fi
 
 if [ "$JAVA_HOME" = "" ]; then
-  echo "Error: JAVA_HOME is not set."
-  exit 1
+    for candidate in \
+    /usr/lib/jvm/java-6-sun \
+    /usr/lib/jvm/java-1.6.0-sun-1.6.0.* \
+    /usr/lib/j2sdk1.6-sun \
+    /usr/java/jdk1.6* \
+    /usr/java/jre1.6* \
+    /Library/Java/Home \
+    /usr/java/default \
+    /usr/lib/jvm/default-java ; do
+    if [ -e $candidate/bin/java ]; then
+      export JAVA_HOME=$candidate
+      break
+    fi
+  done
+  if [ -z $JAVA_HOME ] ; then
+    echo "Error: JAVA_HOME is not set."
+    exit 1
+  fi
 fi
 
 JAVA=$JAVA_HOME/bin/java
@@ -171,22 +220,22 @@ then
   if [ "$SPARK" != "1" ]; then
 
     # add dev targets if they exist
-    for f in $MAHOUT_HOME/examples/target/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
+    for f in $MAHOUT_HOME/examples/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
   fi
 
   # add scala dev target
-  for f in $MAHOUT_HOME/math-scala/target/mahout-math-scala_*.jar ; do
+  for f in $MAHOUT_HOME/mahout-math-scala_*.jar ; do
     CLASSPATH=${CLASSPATH}:$f;
   done
 
   if [ "$H2O" == "1" ]; then
-    for f in $MAHOUT_HOME/hdfs/target/mahout-hdfs-*.jar; do
+    for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/h2o/target/mahout-h2o*.jar; do
+    for f in $MAHOUT_HOME/h2o/mahout-h2o*.jar; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -194,20 +243,28 @@ then
 
   # add jars for running from the command line if we requested shell or spark CLI driver
   if [ "$SPARK" == "1" ]; then
+    if [ -d $BASEMAPR/spark/spark-* ]; then
+      cd $BASEMAPR/spark/spark-*
+      SPARK_HOME=`pwd`
+      export SPARK_HOME=`pwd`
+    else
+      echo "Cannot export spark home!"
+      exit 0
+    fi
 
-    for f in $MAHOUT_HOME/hdfs/target/mahout-hdfs-*.jar ; do
+    for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/math/target/mahout-math-*.jar ; do
+    for f in $MAHOUT_HOME/math/mahout-math-*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/spark/target/mahout-spark_*.jar ; do
+    for f in $MAHOUT_HOME/spark/mahout-spark_*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/spark-shell/target/mahout-spark-shell_*.jar ; do
+    for f in $MAHOUT_HOME/spark-shell/mahout-spark-shell_*.jar ; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -232,6 +289,13 @@ then
 
   # add release dependencies to CLASSPATH
   for f in $MAHOUT_HOME/lib/*.jar; do
+    CLASSPATH=${CLASSPATH}:$f;
+  done
+  for f in $BASEMAPR/*.jar; do
+    CLASSPATH=${CLASSPATH}:$f;
+  done
+
+  for f in $HADOOP_HOME/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
 else
@@ -307,6 +371,8 @@ case "$1" in
 
     MAHOUT_OPTS="$MAHOUT_OPTS -Dhadoop.log.dir=$MAHOUT_LOG_DIR"
     MAHOUT_OPTS="$MAHOUT_OPTS -Dhadoop.log.file=$MAHOUT_LOGFILE"
+
+    JAVA_LIBRARY_PATH="$JAVA_LIBRARY_PATH:$LD_LIBRARY_PATH:${BASEMAPR}/lib/"
    
 
     if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
@@ -315,7 +381,7 @@ case "$1" in
 
     CLASS=org.apache.mahout.driver.MahoutDriver
 
-    for f in $MAHOUT_HOME/examples/target/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
+    for f in $MAHOUT_HOME/examples/mahout-examples-*-job.jar $MAHOUT_HOME/mahout-examples-*-job.jar ; do
       if [ -e "$f" ]; then
         MAHOUT_JOB=$f
       fi

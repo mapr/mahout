@@ -19,7 +19,7 @@
 package org.apache.mahout.flinkbindings.io
 
 /**
- * High level Hadoop version-specific hdfs manipulations we need in context of our operations.
+ * High level Hadoop version-specific MapR-FS manipulations we need in context of our operations.
  *
  */
 trait HDFSUtil {

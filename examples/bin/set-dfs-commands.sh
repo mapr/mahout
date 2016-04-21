@@ -24,6 +24,30 @@
 # Run by each example script.
 
 # Find a hadoop shell
+
+BASEMAPR=${MAPR_HOME:-/opt/mapr}
+hadoopVersionFile="${BASEMAPR}/conf/hadoop_version"
+if [ -f ${hadoopVersionFile} ]
+then
+hadoop_mode=`cat ${hadoopVersionFile} | grep default_mode | cut -d '=' -f 2`
+    if [ "$hadoop_mode" = "yarn" ]; then
+	    version_hadoop=`cat ${hadoopVersionFile} | grep yarn_version | cut -d '=' -f 2`
+    elif [ "$hadoop_mode" = "classic" ]; then
+    	version_hadoop=`cat ${hadoopVersionFile} | grep classic_version | cut -d '=' -f 2`
+    else
+	    echo 'Unknown hadoop version'
+    fi
+
+else
+    version_cmd="hadoop version"
+    res=`eval $CMD`
+    HADOOP_VERSION_PATH=`readlink \`which hadoop\` | awk -F "/" '{print$5}'`
+    version_hadoop=`echo ${HADOOP_VERSION_PATH} | cut -d'-' -f 2`
+    confDir=${HADOOP_BASE_DIR}${version_hadoop}/conf/
+fi
+HADOOP_VERSION=hadoop-${version_hadoop}
+HADOOP_HOME=${BASEMAPR}/hadoop/${HADOOP_VERSION}/
+
 if [ "$HADOOP_HOME" != "" ] && [ "$MAHOUT_LOCAL" == "" ] ; then
   HADOOP="${HADOOP_HOME}/bin/hadoop"
   if [ ! -e $HADOOP ]; then

@@ -67,7 +67,7 @@ trait DistributedEngine {
   def drmBroadcast(m: Matrix)(implicit dc: DistributedContext): BCast[Matrix]
 
   /**
-   * Load DRM from hdfs (as in Mahout DRM format).
+   * Load DRM from MapR-FS (as in Mahout DRM format).
    * <P/>
    * @param path The DFS path to load from
    * @param parMin Minimum parallelism after load (equivalent to #par(min=...)).

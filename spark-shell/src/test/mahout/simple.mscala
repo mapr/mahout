@@ -36,5 +36,5 @@ r.collect
 // local write
 r.dfsWrite("file:///home/dmitriy/A")
 
-// hdfs write -- uncomment to test
-// r.dfsWrite("hdfs://localhost:11010/A")
+// MapR-FS write -- uncomment to test
+// r.dfsWrite("maprfs://localhost:11010/A")
