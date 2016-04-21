@@ -57,9 +57,9 @@ hadoopVersionFile="${BASEMAPR}/conf/hadoop_version"
 if [ -f ${hadoopVersionFile} ]
 then
 hadoop_mode=`cat ${hadoopVersionFile} | grep default_mode | cut -d '=' -f 2`
-  if [ "$hadoop_mode" = "yarn" ]; then
+  if [ "$HADOOP_MODE" = "yarn" ]; then
     version_hadoop=`cat ${hadoopVersionFile} | grep yarn_version | cut -d '=' -f 2`
-  elif [ "$hadoop_mode" = "classic" ]; then
+  elif [ "$HADOOP_MODE" = "classic" ]; then
     version_hadoop=`cat ${hadoopVersionFile} | grep classic_version | cut -d '=' -f 2`
   else
     echo 'Unknown hadoop version'
@@ -213,7 +213,7 @@ IFS=
 if [ $IS_CORE == 0 ]
 then
   # add release dependencies to CLASSPATH
-  for f in $MAHOUT_HOME/mahout-*.jar; do
+  for f in $MAHOUT_HOME/$HADOOP_MODE/mahout-*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
 
@@ -225,17 +225,12 @@ then
     done
   fi
 
-  # add scala dev target
-  for f in $MAHOUT_HOME/mahout-math-scala_*.jar ; do
-    CLASSPATH=${CLASSPATH}:$f;
-  done
-
   if [ "$H2O" == "1" ]; then
-    for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar; do
+    for f in $MAHOUT_HOME/$HADOOP_MODE/hdfs/mahout-hdfs-*.jar; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/h2o/mahout-h2o*.jar; do
+    for f in $MAHOUT_HOME/$HADOOP_MODE/h2o/mahout-h2o*.jar; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -252,19 +247,15 @@ then
       exit 0
     fi
 
-    for f in $MAHOUT_HOME/hdfs/mahout-hdfs-*.jar ; do
+    for f in $MAHOUT_HOME/$HADOOP_MODE/hdfs/mahout-hdfs-*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/math/mahout-math-*.jar ; do
+    for f in $MAHOUT_HOME/$HADOOP_MODE/spark/mahout-spark_*.jar ; do
       CLASSPATH=${CLASSPATH}:$f;
     done
 
-    for f in $MAHOUT_HOME/spark/mahout-spark_*.jar ; do
-      CLASSPATH=${CLASSPATH}:$f;
-    done
-
-    for f in $MAHOUT_HOME/spark-shell/mahout-spark-shell_*.jar ; do
+    for f in $MAHOUT_HOME/$HADOOP_MODE/spark-shell/mahout-spark-shell_*.jar ; do
        CLASSPATH=${CLASSPATH}:$f;
     done
 
@@ -291,7 +282,7 @@ then
   for f in $MAHOUT_HOME/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
-  for f in $BASEMAPR/*.jar; do
+  for f in $BASEMAPR/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
 

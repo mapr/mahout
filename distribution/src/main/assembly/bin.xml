@@ -67,18 +67,6 @@
       <outputDirectory/>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../math-scala/target</directory>
-      <includes>
-        <include>mahout-*.jar</include>
-      </includes>
-      <excludes>
-        <exclude>*sources.jar</exclude>
-        <exclude>*javadoc.jar</exclude>
-        <exclude>*tests.jar</exclude>
-      </excludes>
-      <outputDirectory/>
-    </fileSet>
-    <fileSet>
       <directory>${project.basedir}/../hdfs/target</directory>
       <includes>
         <include>mahout-*.job</include>
@@ -183,46 +171,7 @@
       <outputDirectory/>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../spark/target</directory>
-      <includes>
-        <include>mahout-*.jar</include>
-        <include>mahout-*.job</include>
-      </includes>
-      <excludes>
-        <exclude>*sources.jar</exclude>
-        <exclude>*javadoc.jar</exclude>
-        <exclude>*tests.jar</exclude>
-      </excludes>
-      <outputDirectory/>
-    </fileSet>
-    <fileSet>
       <directory>${project.basedir}/../flink/target</directory>
-      <includes>
-        <include>mahout-*.jar</include>
-        <include>mahout-*.job</include>
-      </includes>
-      <excludes>
-        <exclude>*sources.jar</exclude>
-        <exclude>*javadoc.jar</exclude>
-        <exclude>*tests.jar</exclude>
-      </excludes>
-      <outputDirectory/>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../spark-shell/target</directory>
-      <includes>
-        <include>mahout-*.jar</include>
-        <include>mahout-*.job</include>
-      </includes>
-      <excludes>
-        <exclude>*sources.jar</exclude>
-        <exclude>*javadoc.jar</exclude>
-        <exclude>*tests.jar</exclude>
-      </excludes>
-      <outputDirectory/>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../h2o/target</directory>
       <includes>
         <include>mahout-*.jar</include>
         <include>mahout-*.job</include>
