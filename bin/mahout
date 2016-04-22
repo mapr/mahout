@@ -56,7 +56,7 @@ BASEMAPR=${MAPR_HOME:-/opt/mapr}
 hadoopVersionFile="${BASEMAPR}/conf/hadoop_version"
 if [ -f ${hadoopVersionFile} ]
 then
-hadoop_mode=`cat ${hadoopVersionFile} | grep default_mode | cut -d '=' -f 2`
+HADOOP_MODE=`cat ${hadoopVersionFile} | grep default_mode | cut -d '=' -f 2`
   if [ "$HADOOP_MODE" = "yarn" ]; then
     version_hadoop=`cat ${hadoopVersionFile} | grep yarn_version | cut -d '=' -f 2`
   elif [ "$HADOOP_MODE" = "classic" ]; then
