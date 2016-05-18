@@ -28,7 +28,7 @@
 
   <groupId>org.apache.mahout</groupId>
   <artifactId>mahout-buildtools</artifactId>
-  <version>0.12.1</version>
+  <version>0.12.2-SNAPSHOT</version>
   <name>Mahout Build Tools</name>
 
   <packaging>jar</packaging>
@@ -143,12 +143,4 @@
       </build>
     </profile>
   </profiles>
-
-  <scm>
-<<<<<<< HEAD
-    <tag>mahout-0.12.0</tag>
-=======
-    <tag>mahout-0.12.1</tag>
->>>>>>> 92ef9e5... [maven-release-plugin] prepare release mahout-0.12.1
-  </scm>
 </project>
