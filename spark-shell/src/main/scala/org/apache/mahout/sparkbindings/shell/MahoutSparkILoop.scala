@@ -41,7 +41,6 @@ class MahoutSparkILoop extends SparkILoop {
       "import collection.JavaConversions._" ::
       Nil
 
-  def getSparkDistributedContext: SparkDistributedContext  = sdc
 
   // Hack: for some very unclear reason, log4j is not picking up log4j.properties in Spark conf/ even
   // though the latter is added to the classpath. So we force it to pick it.
@@ -55,108 +54,56 @@ class MahoutSparkILoop extends SparkILoop {
   // expects it
   org.apache.spark.repl.Main.interp = _interp
 
-  _interp.setPrompt("mahout> ")
-
-  // sparkILoop.echo(...) is private so we create our own here.
-  def echoToShell(str: String): Unit = {
-    _interp.out.println(str)
-  }
-
-  // create a spark context as a mahout SparkDistributedContext.
-  // store the SparkDistributedContext for decleration in the intreperer session.
-  override def createSparkContext(): SparkContext = {
-    val execUri = System.getenv("SPARK_EXECUTOR_URI")
-    val master = _interp.master match {
-      case Some(m) => m
-      case None => {
-        val prop = System.getenv("MASTER")
-        if (prop != null) prop else "local"
-      }
-    }
-
-    val jars = SparkILoop.getAddedJars.map(new java.io.File(_).getAbsolutePath)
-    val conf = new SparkConf().set("spark.repl.class.uri", _interp.classServerUri)
-
-    if (execUri != null) {
-      conf.set("spark.executor.uri", execUri)
-    }
-
-    // set default value of spark.executor.memory to 1g
-    if(!conf.contains("spark.executor.memory")) {
-      conf.set("spark.executor.memory", "1g")
-    }
-
-    // set default if not already set- this is useful in local mode
-    if(!conf.contains("spark.kryoserializer.buffer.max")) {
-      conf.set("spark.kryoserializer.buffer.max", "1g")
-    }
-
-    sdc = mahoutSparkContext(
-      masterUrl = master,
-      appName = "Mahout Spark Shell",
-      customJars = jars,
-      sparkConf = conf
-    )
-
-    _interp.sparkContext = sdc
-
-    echoToShell("Created spark context..")
-    sparkContext
-  }
-
   // this is technically not part of Spark's explicitly defined Developer API though
   // nothing in the SparkILoopInit.scala file is marked as such.
   override def initializeSpark() {
 
-    _interp.beQuietDuring {
+    intp.beQuietDuring {
 
       // get the spark context, at the same time create and store a mahout distributed context.
-      _interp.interpret("""
-         @transient val sc = {
-           val _sc = org.apache.spark.repl.Main.interp.createSparkContext()
-           _sc
-         }
+      processLine("""
+          @transient val spark = if (org.apache.spark.repl.Main.sparkSession != null) {
+            org.apache.spark.repl.Main.sparkSession
+          } else {
+            org.apache.spark.repl.Main.createSparkSession()
+          }
+
+          @transient val sc = {
+            val _sc = spark.sparkContext
+            if (_sc.getConf.getBoolean("spark.ui.reverseProxy", false)) {
+              val proxyUrl = _sc.getConf.get("spark.ui.reverseProxyUrl", null)
+              if (proxyUrl != null) {
+                println(s"Spark Context Web UI is available at ${proxyUrl}/proxy/${_sc.applicationId}")
+              } else {
+                println(s"Spark Context Web UI is available at Spark Master Public URL")
+              }
+            } else {
+              _sc.uiWebUrl.foreach {
+                webUrl => println(s"Spark context Web UI available at ${webUrl}")
+              }
+            }
+            println("Spark context available as 'sc' " +
+              s"(master = ${_sc.master}, app id = ${_sc.applicationId}).")
+            println("Spark session available as 'spark'.")
+            _sc
+          }
+          val jars = sc.jars.map(new java.io.File(_).getAbsolutePath)
+          val sdc = org.apache.mahout.sparkbindings.mahoutSparkContext(sc, jars)
+          println("Mahout distributed context is available as \"implicit val sdc\".")
                         """)
-      echoToShell("Spark context is available as \"val sc\".")
 
-      // retrieve the stored mahout SparkDistributedContext.
-      _interp.interpret("""
-         @transient implicit val sdc: org.apache.mahout.sparkbindings.SparkDistributedContext =
-            org.apache.spark.repl.Main.interp
-             .asInstanceOf[org.apache.mahout.sparkbindings.shell.MahoutSparkILoop]
-             .getSparkDistributedContext
-                        """)
-      echoToShell("Mahout distributed context is available as \"implicit val sdc\".")
-
-      // create a SQL Context.
-      _interp.interpret("""
-         @transient val sqlContext = {
-           val _sqlContext = org.apache.spark.repl.Main.interp.createSQLContext()
-           _sqlContext
-         }
-                        """)
-      _interp.interpret("import org.apache.spark.SparkContext._")
-      _interp.interpret("import sqlContext.implicits._")
-      _interp.interpret("import sqlContext.sql")
-      _interp.interpret("import org.apache.spark.sql.functions._")
-      echoToShell("SQL context available as \"val sqlContext\".")
-
-    }
-  }
-
-  // this is technically not part of Spark's explicitly defined Developer API though
-  // nothing in the SparkILoopInit.scala file is marked as such.
-  override protected def postInitialization() {
-    super.postInitialization()
-    _interp.beQuietDuring {
-      postInitImports.foreach(_interp.interpret)
+      processLine("import org.apache.spark.SparkContext._")
+      processLine("import spark.implicits._")
+      processLine("import spark.sql")
+      processLine("import org.apache.spark.sql.functions._")
+      replayCommandStack = Nil // remove above commands from session history.
     }
   }
 
   // this is technically not part of Spark's explicitly defined Developer API though
   // nothing in the SparkILoopInit.scala file is marked as such..
   override def printWelcome(): Unit = {
-    echoToShell(
+    echo(
       """
                          _                 _
          _ __ ___   __ _| |__   ___  _   _| |_
@@ -168,10 +115,9 @@ class MahoutSparkILoop extends SparkILoop {
     import Properties._
     val welcomeMsg = "Using Scala %s (%s, Java %s)".format(
       versionString, javaVmName, javaVersion)
-    echoToShell(welcomeMsg)
-    echoToShell("Type in expressions to have them evaluated.")
-    echoToShell("Type :help for more information.")
+    echo(welcomeMsg)
+    echo("Type in expressions to have them evaluated.")
+    echo("Type :help for more information.")
   }
-
 }
 
