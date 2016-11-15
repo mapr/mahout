@@ -37,6 +37,15 @@ object Main {
     Console.err.println(msg)
   }
 
+  private def getMaster = {
+    val master = System.getenv("MASTER")
+    if(master == null){
+      throw new RuntimeException("MASTER should be set")
+    }
+
+    master
+  }
+
   def main(args: Array[String]) {
     PropertyConfigurator.configure(getMahoutHome() + "/conf/log4j.properties")
 
@@ -47,8 +56,7 @@ object Main {
     // expects it
     org.apache.spark.repl.Main.interp = _interp
 
-    val master = System.getenv("MASTER")
-    sMain.conf.setIfMissing("spark.master", master)
+    sMain.conf.setIfMissing("spark.master", getMaster)
 
     val jars = getUserJars(sMain.conf, isShell = true).mkString(File.pathSeparator)
     val interpArguments = List(

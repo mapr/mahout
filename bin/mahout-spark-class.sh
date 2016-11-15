@@ -35,7 +35,7 @@ else
 fi
 
 # Find assembly jar
-. "$SPARK_HOME/conf/spark-jars.sh"
+SPARK_JARS_CLASSPATH=$(find $SPARK_HOME/jars -name '*.jar' -not -name 'netty-3.8.0.Final.jar' -printf '%p:' | sed 's/:$//')
 
 LAUNCH_CLASSPATH=$SPARK_JARS_CLASSPATH
 
