@@ -289,6 +289,9 @@ then
   for f in $HADOOP_HOME/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
+
+  CLASSPATH=${CLASSPATH}:$HADOOP_HOME/share/hadoop/yarn/*
+
 else
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/math/target/classes
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/hdfs/target/classes
