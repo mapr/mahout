@@ -87,12 +87,12 @@ class MahoutSparkILoop extends SparkILoop {
       processLine("import org.apache.spark.sql.functions._")
       processLine("import collection.JavaConversions._")
       processLine("import org.apache.mahout.sparkbindings._")
-      processLine("import decompositions._")
-      processLine("import RLikeDrmOps._")
-      processLine("import drm._")
-      processLine("import RLikeOps._")
-      processLine("import scalabindings._")
       processLine("import org.apache.mahout.math._")
+      processLine("import decompositions._")
+      processLine("import drm._")
+      processLine("import RLikeDrmOps._")
+      processLine("import scalabindings._")
+      processLine("import RLikeOps._")
 
       replayCommandStack = Nil // remove above commands from session history.
     }
