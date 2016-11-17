@@ -30,17 +30,6 @@ class MahoutSparkILoop extends SparkILoop {
 
   private var sdc: SparkDistributedContext = _
 
-  private val postInitImports =
-    "import org.apache.mahout.math._" ::
-      "import scalabindings._" ::
-      "import RLikeOps._" ::
-      "import drm._" ::
-      "import RLikeDrmOps._" ::
-      "import decompositions._" ::
-      "import org.apache.mahout.sparkbindings._" ::
-      "import collection.JavaConversions._" ::
-      Nil
-
 
   // Hack: for some very unclear reason, log4j is not picking up log4j.properties in Spark conf/ even
   // though the latter is added to the classpath. So we force it to pick it.
@@ -90,12 +79,21 @@ class MahoutSparkILoop extends SparkILoop {
           val jars = sc.jars.map(new java.io.File(_).getAbsolutePath)
           val sdc = org.apache.mahout.sparkbindings.mahoutSparkContext(sc, jars)
           println("Mahout distributed context is available as \"implicit val sdc\".")
-                        """)
+      """)
 
       processLine("import org.apache.spark.SparkContext._")
       processLine("import spark.implicits._")
       processLine("import spark.sql")
       processLine("import org.apache.spark.sql.functions._")
+      processLine("import collection.JavaConversions._")
+      processLine("import org.apache.mahout.sparkbindings._")
+      processLine("import decompositions._")
+      processLine("import RLikeDrmOps._")
+      processLine("import drm._")
+      processLine("import RLikeOps._")
+      processLine("import scalabindings._")
+      processLine("import org.apache.mahout.math._")
+
       replayCommandStack = Nil // remove above commands from session history.
     }
   }
