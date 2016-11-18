@@ -39,11 +39,11 @@ object Main {
 
   private def getMaster = {
     val master = System.getenv("MASTER")
-    if(master == null){
-      throw new RuntimeException("MASTER should be set")
+    if(master == null) {
+      "local[*]"
+    } else {
+      master
     }
-
-    master
   }
 
   def main(args: Array[String]) {
@@ -57,6 +57,7 @@ object Main {
     org.apache.spark.repl.Main.interp = _interp
 
     sMain.conf.setIfMissing("spark.master", getMaster)
+    sMain.conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
 
     val jars = getUserJars(sMain.conf, isShell = true).mkString(File.pathSeparator)
     val interpArguments = List(
