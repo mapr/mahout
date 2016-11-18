@@ -18,11 +18,10 @@
 #
 
 # Figure out where Spark is installed
-#export SPARK_HOME="$(cd "`dirname "$0"`"/..; pwd)"
-
+export SPARK_HOME=$(readlink "/usr/local/spark")
+export MASTER="local[*]"
 #"$SPARK_HOME"/bin/load-spark-env.sh # not executable by defult in $SPARK_HOME/bin
 "$MAHOUT_HOME"/bin/mahout-load-spark-env.sh
-
 # Find the java binary
 if [ -n "${JAVA_HOME}" ]; then
   RUNNER="${JAVA_HOME}/bin/java"
@@ -36,37 +35,16 @@ else
 fi
 
 # Find assembly jar
-SPARK_ASSEMBLY_JAR=
-if [ -f "$SPARK_HOME/RELEASE" ]; then
-  ASSEMBLY_DIR="$SPARK_HOME/lib"
-else
-  ASSEMBLY_DIR="$SPARK_HOME/assembly/target/scala-$SPARK_SCALA_VERSION"
-fi
+SPARK_JARS_CLASSPATH=$(find $SPARK_HOME/jars -name '*.jar' -not -name 'netty-3.8.0.Final.jar' -printf '%p:' | sed 's/:$//')
 
-num_jars="$(ls -1 "$ASSEMBLY_DIR" | grep "^spark-assembly.*hadoop.*\.jar$" | wc -l)"
-if [ "$num_jars" -eq "0" -a -z "$SPARK_ASSEMBLY_JAR" ]; then
-  echo "Failed to find Spark assembly in $ASSEMBLY_DIR." 1>&2
-  echo "You need to build Spark before running this program." 1>&2
-  exit 1
-fi
-ASSEMBLY_JARS="$(ls -1 "$ASSEMBLY_DIR" | grep "^spark-assembly.*hadoop.*\.jar$" || true)"
-if [ "$num_jars" -gt "1" ]; then
-  echo "Found multiple Spark assembly jars in $ASSEMBLY_DIR:" 1>&2
-  echo "$ASSEMBLY_JARS" 1>&2
-  echo "Please remove all but one jar." 1>&2
-  exit 1
-fi
-
-SPARK_ASSEMBLY_JAR="${ASSEMBLY_DIR}/${ASSEMBLY_JARS}"
-
-LAUNCH_CLASSPATH="$SPARK_ASSEMBLY_JAR"
+LAUNCH_CLASSPATH=$SPARK_JARS_CLASSPATH
 
 # Add the launcher build dir to the classpath if requested.
 if [ -n "$SPARK_PREPEND_CLASSES" ]; then
   LAUNCH_CLASSPATH="$SPARK_HOME/launcher/target/scala-$SPARK_SCALA_VERSION/classes:$LAUNCH_CLASSPATH"
 fi
 
-export _SPARK_ASSEMBLY="$SPARK_ASSEMBLY_JAR"
+export _SPARK_ASSEMBLY="$SPARK_JARS_CLASSPATH"
 
 echo $LAUNCH_CLASSPATH
 

@@ -271,7 +271,7 @@ then
     SPARK_ASSEMBLY_BIN="${MAHOUT_HOME}/bin/mahout-spark-class.sh"
     if [ -x "${SPARK_ASSEMBLY_BIN}" ]; then
        SPARK_ASSEMBLY_CLASSPATH=$("${SPARK_ASSEMBLY_BIN}" 2>/dev/null)
-       CLASSPATH="${CLASSPATH}:${SPARK_ASSEMBLY_BIN}"
+       CLASSPATH="${CLASSPATH}:${SPARK_ASSEMBLY_CLASSPATH}"
     else
       echo "Cannot find Spark assembly classpath. Is 'SPARK_HOME' set?"
       exit -1
@@ -289,6 +289,9 @@ then
   for f in $HADOOP_HOME/lib/*.jar; do
     CLASSPATH=${CLASSPATH}:$f;
   done
+
+  CLASSPATH=${CLASSPATH}:$HADOOP_HOME/share/hadoop/yarn/*
+
 else
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/math/target/classes
   CLASSPATH=${CLASSPATH}:$MAHOUT_HOME/hdfs/target/classes
