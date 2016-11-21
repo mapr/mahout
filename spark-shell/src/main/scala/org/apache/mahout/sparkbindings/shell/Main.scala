@@ -17,17 +17,23 @@
 
 package org.apache.mahout.sparkbindings.shell
 
-import java.io.File
+import java.io.{Closeable, File}
 
 import org.apache.log4j.PropertyConfigurator
 import org.apache.mahout.sparkbindings._
+import org.apache.mahout.util.IOUtilsScala
 import org.apache.spark.SparkConf
 import org.apache.spark.repl.{SparkILoop, Main => sMain}
 
+import scala.collection.mutable
 import scala.tools.nsc.GenericRunnerSettings
+import org.apache.mahout.logging._
 
 
 object Main {
+
+  private final implicit val log = getLog(Main.getClass)
+
   private var _interp: SparkILoop = _
 
   private var hasErrors = false
@@ -57,7 +63,40 @@ object Main {
     org.apache.spark.repl.Main.interp = _interp
 
     sMain.conf.setIfMissing("spark.master", getMaster)
-    sMain.conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+
+    val closeables = mutable.ListBuffer.empty[Closeable]
+
+    try {
+      // context specific jars
+      val mcjars = findMahoutContextJars(closeables)
+
+      if (log.isDebugEnabled) {
+        log.debug("Mahout jars:")
+        mcjars.foreach(j => log.debug(j))
+      }
+
+      val sparkJars = sMain.conf.getOption("spark.jars")
+      if (sMain.conf.get("spark.master") == "yarn") {
+        val yarnJars = sMain.conf.getOption("spark.yarn.dist.jars")
+        unionFileLists(sparkJars, yarnJars).toSeq
+      } else {
+        sparkJars.map(_.split(",")).map(_.filter(_.nonEmpty)).toSeq.flatten
+      }
+
+      sMain.conf.setJars(mcjars ++ sparkJars)
+      sMain.conf
+        .set("spark.serializer",
+          "org.apache.spark.serializer.KryoSerializer")
+        .set("spark.kryo.registrator",
+          "org.apache.mahout.sparkbindings.io.MahoutKryoRegistrator")
+
+      if (System.getenv("SPARK_HOME") != null) {
+        sMain.conf.setSparkHome(System.getenv("SPARK_HOME"))
+      }
+
+    } finally {
+      IOUtilsScala.close(closeables)
+    }
 
     val jars = getUserJars(sMain.conf, isShell = true).mkString(File.pathSeparator)
     val interpArguments = List(

@@ -76,9 +76,7 @@ class MahoutSparkILoop extends SparkILoop {
             println("Spark session available as 'spark'.")
             _sc
           }
-
-          val customJars = sc.jars.map(new java.io.File(_).getAbsolutePath)
-          @transient implicit val sdc = org.apache.mahout.sparkbindings.mahoutSparkContext(sc,customJars)
+          @transient implicit val sdc = new org.apache.mahout.sparkbindings.SparkDistributedContext(sc)
           println("Mahout distributed context is available as \"implicit val sdc\".")
       """)
 
