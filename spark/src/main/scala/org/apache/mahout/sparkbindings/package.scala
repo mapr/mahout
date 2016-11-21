@@ -94,38 +94,9 @@ package object sparkbindings {
   }
 
   def mahoutSparkContext(
-    sc: SparkContext,
-    customJars: TraversableOnce[String]
+    sc: SparkContext
   ): SparkDistributedContext = {
-
-    val closeables = mutable.ListBuffer.empty[Closeable]
-
-    try {
-      // context specific jars
-      val mcjars = findMahoutContextJars(closeables)
-
-      if (log.isDebugEnabled) {
-        log.debug("Mahout jars:")
-        mcjars.foreach(j => log.debug(j))
-      }
-
-      sc.getConf.setJars(mcjars ++ customJars)
-
-      sc.getConf
-        .set("spark.serializer",
-          "org.apache.spark.serializer.KryoSerializer")
-        .set("spark.kryo.registrator",
-          "org.apache.mahout.sparkbindings.io.MahoutKryoRegistrator")
-
-      if (System.getenv("SPARK_HOME") != null) {
-        sc.getConf.setSparkHome(System.getenv("SPARK_HOME"))
-      }
-
-      new SparkDistributedContext(sc)
-
-    } finally {
-      IOUtilsScala.close(closeables)
-    }
+    new SparkDistributedContext(sc)
   }
 
   implicit def sdc2sc(sdc: SparkDistributedContext): SparkContext = sdc.sc
