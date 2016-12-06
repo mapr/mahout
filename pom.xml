@@ -28,7 +28,7 @@
   <groupId>org.apache.mahout</groupId>
   <artifactId>mahout</artifactId>
 
-  <version>0.12.0-mapr</version>
+  <version>0.12.0-mapr-1611</version>
 
   <packaging>pom</packaging>
   <name>Apache Mahout</name>
@@ -102,7 +102,7 @@
     <connection>scm:git:git@github.com:apache/mahout.git</connection>
     <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/mahout.git</developerConnection>
     <url>https://git-wip-us.apache.org/repos/asf?p=mahout.git;a=tree;h=refs/heads/${project.scm.tag};hb=${project.scm.tag}</url>
-    <tag>mahout-0.12.0-mapr</tag>
+    <tag>mahout-0.12.0-mapr-1611</tag>
   </scm>
   <properties>
     <skipTests>false</skipTests>
@@ -121,7 +121,7 @@
     <slf4j.version>1.7.19</slf4j.version>
     <scala.compat.version>2.11</scala.compat.version>
     <scala.version>2.11.6</scala.version>
-    <spark.version>2.0.1-mapr-SNAPSHOT</spark.version>
+    <spark.version>2.0.1-mapr-1611</spark.version>
     <flink.version>1.0.3</flink.version>
     <h2o.version>0.1.25</h2o.version>
     <!-- MapR custom properties -->

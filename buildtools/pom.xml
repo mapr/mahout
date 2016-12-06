@@ -28,7 +28,7 @@
 
   <groupId>org.apache.mahout</groupId>
   <artifactId>mahout-buildtools</artifactId>
-  <version>0.12.0-mapr</version>
+  <version>0.12.0-mapr-1611</version>
   <name>Mahout Build Tools</name>
 
   <packaging>jar</packaging>
@@ -145,6 +145,6 @@
   </profiles>
 
   <scm>
-    <tag>mahout-0.12.0-mapr</tag>
+    <tag>mahout-0.12.0-mapr-1611</tag>
   </scm>
 </project>
